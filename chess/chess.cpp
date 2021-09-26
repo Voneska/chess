@@ -1,11 +1,14 @@
-﻿// chess.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
-//
+﻿#include <iostream>
+#include <Windows.h>
 
-#include <iostream>
+HWND hwnd = GetConsoleWindow();
+HDC hdc = GetDC(hwnd);
+
 
 int main()
 {
-    std::cout << "Hello World!\n";
+
+
 }
 
 

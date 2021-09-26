@@ -7,7 +7,7 @@ HDC hdc = GetDC(hwnd);
 int main()
 {
 	printf("hello word");
-
+	printf("hello word");
 }
 
 

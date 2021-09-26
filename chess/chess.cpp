@@ -4,7 +4,6 @@
 HWND hwnd = GetConsoleWindow();
 HDC hdc = GetDC(hwnd);
 
-
 int main()
 {
 

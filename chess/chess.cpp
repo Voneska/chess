@@ -30,6 +30,16 @@ int main()
 	std::cout << BlackHorse.checkcolor() << "\t" << WhiteHorse.checkcolor()<< std::endl;
 
 
+	printf("hello word");
+	HPEN pen = CreatePen(PS_SOLID, 1, RGB(255, 255, 255));
+	HBRUSH pen1 = CreateSolidBrush(RGB(137, 104, 37));
+	SelectObject(hdc, pen);
+	SelectObject(hdc, pen1);
+	Rectangle(hdc, 60, 60, 200, 200);
+	DeleteObject(pen);
+	DeleteObject(pen1);
+	getchar();
+
 	return 0;
 }
 

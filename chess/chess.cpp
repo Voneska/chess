@@ -26,8 +26,10 @@ public:
 
 int main()
 {
-	Figures BlackBlackHorse2(1), WhiteWhiteHorse;
-	std::cout << BlackBlackHorse2.checkcolor() << "\t" << WhiteWhiteHorse.checkcolor()<< std::endl;
+
+	Figures BlackHorse(1), WhiteHorse;
+	std::cout << BlackHorse.checkcolor() << "\t" << WhiteHorse.checkcolor()<< std::endl;
+
 
 
 	HPEN pen = CreatePen(PS_SOLID, 1, RGB(255, 255, 255));

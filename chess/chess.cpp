@@ -29,8 +29,8 @@ int main()
 	Figures BlackHorse(1), WhiteHorse;
 	std::cout << BlackHorse.checkcolor() << "\t" << WhiteHorse.checkcolor()<< std::endl;
 
+
 	printf("hello word");
-	std::cout << "\nHello word2\n";
 	HPEN pen = CreatePen(PS_SOLID, 1, RGB(255, 255, 255));
 	HBRUSH pen1 = CreateSolidBrush(RGB(137, 104, 37));
 	SelectObject(hdc, pen);
@@ -39,6 +39,7 @@ int main()
 	DeleteObject(pen);
 	DeleteObject(pen1);
 	getchar();
+
 	return 0;
 }
 

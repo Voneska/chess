@@ -29,8 +29,7 @@ int main()
 	Figures BlackHorse(1), WhiteHorse;
 	std::cout << BlackHorse.checkcolor() << "\t" << WhiteHorse.checkcolor()<< std::endl;
 
-	printf("hello word");
-	std::cout << "\nHello word2\n";
+
 	return 0;
 }
 

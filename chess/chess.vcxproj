@@ -153,6 +153,9 @@
   <ItemGroup>
     <ClCompile Include="chess.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="pictures\desk3.bmp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

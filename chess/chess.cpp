@@ -115,7 +115,7 @@ bool chek_cell(string s)//vozvrashaet 0 v slychae esli cletca ne bietsa
 	unsigned short hod[2];
 	translatePosition(s, hod);
 	//krol + peski
-	for (int i = hod[1]+1; i < 8; i++)//n
+	for (int i = hod[1] + 1; i < 8; i++)//n
 	{
 		if ((cell[i][hod[0]] / 10) == (turn + 1))  break;
 		if ((cell[i][hod[0]] / 10) != 0)
@@ -129,7 +129,7 @@ bool chek_cell(string s)//vozvrashaet 0 v slychae esli cletca ne bietsa
 			if (((cell[i][hod[0]] % 10) == 4) || ((cell[i][hod[0]] % 10) == 5)) return 1;
 			else break;
 	}
-	for (int i = hod[0]+1; i < 8; i++)//e
+	for (int i = hod[0] + 1; i < 8; i++)//e
 	{
 		if ((cell[hod[1]][i] / 10) == (turn + 1))  break;
 		if ((cell[hod[1]][i] / 10) != 0)
@@ -143,51 +143,51 @@ bool chek_cell(string s)//vozvrashaet 0 v slychae esli cletca ne bietsa
 			if (((cell[hod[1]][i] % 10) == 4) || ((cell[hod[1]][i] % 10) == 5)) return 1;
 			else break;
 	}
-	for (int i = hod[1]+1, int j = hod[0]+1; j < 8, i < 8; j++, i++)//n-e
+	for (int i = hod[1] + 1, j = hod[0] + 1; j < 8, i < 8; j++, i++)//n-e
 	{
 		if ((cell[i][j] / 10) == (turn + 1))  break;
 		if ((cell[i][j] / 10) != 0)
 			if (((cell[i][j] % 10) == 3) || ((cell[hod[1]][i] % 10) == 5)) return 1;
 			else break;
 	}
-	for (int i = hod[1]-1, int j = hod[0]-1; j >= 0, i >= 0; j--, i--)//s-w
+	for (int i = hod[1] - 1, j = hod[0] - 1; j >= 0, i >= 0; j--, i--)//s-w
 	{
 		if ((cell[i][j] / 10) == (turn + 1))  break;
 		if ((cell[i][j] / 10) != 0)
 			if (((cell[i][j] % 10) == 3) || ((cell[hod[1]][i] % 10) == 5)) return 1;
 			else break;
 	}
-	for (int i = hod[1] - 1, int j = hod[0] + 1; j < 8, i >= 0; j++, i--)//s-e
+	for (int i = hod[1] - 1, j = hod[0] + 1; j < 8, i >= 0; j++, i--)//s-e
 	{
 		if ((cell[i][j] / 10) == (turn + 1))  break;
 		if ((cell[i][j] / 10) != 0)
 			if (((cell[i][j] % 10) == 3) || ((cell[hod[1]][i] % 10) == 5)) return 1;
 			else break;
 	}
-	for (int i = hod[1] + 1, int j = hod[0] -1; j >= 0, i < 8; j--, i++)//n-w
+	for (int i = hod[1] + 1, j = hod[0] - 1; j >= 0, i < 8; j--, i++)//n-w
 	{
 		if ((cell[i][j] / 10) == (turn + 1))  break;
 		if ((cell[i][j] / 10) != 0)
 			if (((cell[i][j] % 10) == 3) || ((cell[hod[1]][i] % 10) == 5)) return 1;
 			else break;
 	}
-	if ((hod[1] + 2 < 8) && (hod[0] + 1 < 8) && (cell[hod[1]+2][hod[0]+1] % 10 == 2) && (cell[hod[1] + 2][hod[0] + 1] / 10 != turn+1)) return 1;//horse
-	if ((hod[1] + 1 < 8) && (hod[0] + 2 < 8) && (cell[hod[1]+1][hod[0]+2] % 10 == 2) && (cell[hod[1] + 1][hod[0] + 2] / 10 != turn + 1)) return 1;
-	if ((hod[1] + 2 < 8) && (hod[0] - 1 >= 0) && (cell[hod[1]+2][hod[0]-1] % 10 == 2) && (cell[hod[1] + 2][hod[0] - 1] / 10 != turn + 1)) return 1;
-	if ((hod[1] + 1 < 8) && (hod[0] - 2 >= 0) && (cell[hod[1]+1][hod[0]-2] % 10 == 2) && (cell[hod[1] + 1][hod[0] - 2] / 10 != turn + 1)) return 1;
-	if ((hod[1] - 2 >= 0) && (hod[0] + 1 < 8) && (cell[hod[1]-2][hod[0]+1] % 10 == 2) && (cell[hod[1] - 2][hod[0] + 1] / 10 != turn + 1)) return 1;
-	if ((hod[1] - 1 >= 0) && (hod[0] + 2 < 8) && (cell[hod[1]-1][hod[0]+2] % 10 == 2) && (cell[hod[1] - 1][hod[0] + 2] / 10 != turn + 1)) return 1;
-	if ((hod[1] - 2 >= 0) && (hod[0] - 1 >= 0) && (cell[hod[1]-2][hod[0]-1] % 10 == 2) && (cell[hod[1] - 2][hod[0] - 1] / 10 != turn + 1)) return 1;
-	if ((hod[1] - 1 >= 0) && (hod[0] - 2 >= 0) && (cell[hod[1]-1][hod[0]-2] % 10 == 2) && (cell[hod[1] - 1][hod[0] - 2] / 10 != turn + 1)) return 1;
+	if ((hod[1] + 2 < 8) && (hod[0] + 1 < 8) && (cell[hod[1] + 2][hod[0] + 1] % 10 == 2) && (cell[hod[1] + 2][hod[0] + 1] / 10 != turn + 1)) return 1;//horse
+	if ((hod[1] + 1 < 8) && (hod[0] + 2 < 8) && (cell[hod[1] + 1][hod[0] + 2] % 10 == 2) && (cell[hod[1] + 1][hod[0] + 2] / 10 != turn + 1)) return 1;
+	if ((hod[1] + 2 < 8) && (hod[0] - 1 >= 0) && (cell[hod[1] + 2][hod[0] - 1] % 10 == 2) && (cell[hod[1] + 2][hod[0] - 1] / 10 != turn + 1)) return 1;
+	if ((hod[1] + 1 < 8) && (hod[0] - 2 >= 0) && (cell[hod[1] + 1][hod[0] - 2] % 10 == 2) && (cell[hod[1] + 1][hod[0] - 2] / 10 != turn + 1)) return 1;
+	if ((hod[1] - 2 >= 0) && (hod[0] + 1 < 8) && (cell[hod[1] - 2][hod[0] + 1] % 10 == 2) && (cell[hod[1] - 2][hod[0] + 1] / 10 != turn + 1)) return 1;
+	if ((hod[1] - 1 >= 0) && (hod[0] + 2 < 8) && (cell[hod[1] - 1][hod[0] + 2] % 10 == 2) && (cell[hod[1] - 1][hod[0] + 2] / 10 != turn + 1)) return 1;
+	if ((hod[1] - 2 >= 0) && (hod[0] - 1 >= 0) && (cell[hod[1] - 2][hod[0] - 1] % 10 == 2) && (cell[hod[1] - 2][hod[0] - 1] / 10 != turn + 1)) return 1;
+	if ((hod[1] - 1 >= 0) && (hod[0] - 2 >= 0) && (cell[hod[1] - 1][hod[0] - 2] % 10 == 2) && (cell[hod[1] - 1][hod[0] - 2] / 10 != turn + 1)) return 1;
 
-	if ((hod[1] + 1 < 8) && (hod[0] + 1 < 8) && (cell[hod[1]+1][hod[0]+1] % 10 == 6) && (cell[hod[1] + 1][hod[0] + 1] / 10 != turn + 1)) return 1;//king
-	if ((hod[1] + 1 < 8) && (cell[hod[1]+1][hod[0]] % 10 == 6) && (cell[hod[1] + 1][hod[0]] / 10 != turn+1)) return 1;
-	if ((hod[1] + 1 < 8) && (hod[0] - 1 >= 0) && (cell[hod[1]+1][hod[0]-1] % 10 == 6) && (cell[hod[1] + 1][hod[0] - 1] / 10 != turn + 1)) return 1;
-	if ((hod[1] - 1 >= 0) && (cell[hod[1]-1][hod[0]] % 10 == 6) && (cell[hod[1] - 1][hod[0]] / 10 != turn+1)) return 1;
-	if ((hod[1] - 1 >= 0) && (hod[0] + 1 < 8) && (cell[hod[1]-1][hod[0]+1] % 10 == 6) && (cell[hod[1] - 1][hod[0] + 1] / 10 != turn + 1)) return 1;
-	if ((hod[0] + 1 < 8) && (cell[hod[1]][hod[0]+1] % 10 == 6) && (cell[hod[1]][hod[0] + 1] / 10 != turn+1)) return 1;
-	if ((hod[1] - 1 >= 0) && (hod[0] - 1 >= 0) && (cell[hod[1]-1][hod[0]-1] % 10 == 6) && (cell[hod[1] - 1][hod[0] - 1] / 10 != turn + 1)) return 1;
-	if ((hod[0] - 1 >= 0) && (cell[hod[1]][hod[0]-1] % 10 == 6) && (cell[hod[1]][hod[0] - 1] / 10 != turn+1)) return 1;
+	if ((hod[1] + 1 < 8) && (hod[0] + 1 < 8) && (cell[hod[1] + 1][hod[0] + 1] % 10 == 6) && (cell[hod[1] + 1][hod[0] + 1] / 10 != turn + 1)) return 1;//king
+	if ((hod[1] + 1 < 8) && (cell[hod[1] + 1][hod[0]] % 10 == 6) && (cell[hod[1] + 1][hod[0]] / 10 != turn + 1)) return 1;
+	if ((hod[1] + 1 < 8) && (hod[0] - 1 >= 0) && (cell[hod[1] + 1][hod[0] - 1] % 10 == 6) && (cell[hod[1] + 1][hod[0] - 1] / 10 != turn + 1)) return 1;
+	if ((hod[1] - 1 >= 0) && (cell[hod[1] - 1][hod[0]] % 10 == 6) && (cell[hod[1] - 1][hod[0]] / 10 != turn + 1)) return 1;
+	if ((hod[1] - 1 >= 0) && (hod[0] + 1 < 8) && (cell[hod[1] - 1][hod[0] + 1] % 10 == 6) && (cell[hod[1] - 1][hod[0] + 1] / 10 != turn + 1)) return 1;
+	if ((hod[0] + 1 < 8) && (cell[hod[1]][hod[0] + 1] % 10 == 6) && (cell[hod[1]][hod[0] + 1] / 10 != turn + 1)) return 1;
+	if ((hod[1] - 1 >= 0) && (hod[0] - 1 >= 0) && (cell[hod[1] - 1][hod[0] - 1] % 10 == 6) && (cell[hod[1] - 1][hod[0] - 1] / 10 != turn + 1)) return 1;
+	if ((hod[0] - 1 >= 0) && (cell[hod[1]][hod[0] - 1] % 10 == 6) && (cell[hod[1]][hod[0] - 1] / 10 != turn + 1)) return 1;
 
 	if (turn == 0)//peska
 	{

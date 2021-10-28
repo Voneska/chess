@@ -154,7 +154,7 @@
     <ClCompile Include="chess.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="pictures\desk3.bmp" />
+    <ClInclude Include="pictures_of_figures.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

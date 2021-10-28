@@ -1,13 +1,11 @@
 ﻿#include <iostream>
 #include <Windows.h>
 #include <string>
-
-#define DESK L"pictures\\desk3.bmp"
-#define PESHKA L"pictures\\horsewhite.bmp"
+#include "pictures_of_figures.h"
 
 using namespace std;
 
-int cell[8][8] = {0};
+unsigned short cell[8][8] = {0};
 
 
 HWND hWnd = GetConsoleWindow();
@@ -18,38 +16,19 @@ int height = GetDeviceCaps(hdc, VERTRES);
 int width = GetDeviceCaps(hdc, HORZRES);
 
 
-//Координаты левого верхнего угла доски MAKEINTRESOURCE(IDB_DESK)  LR_LOADFROMFILE | LR_DEFAULTSIZE  L"pictures\\desk3.bmp" LR_DEFAULTCOLOR
-int x = 300;
-int y = 1;
+//Координаты левого верхнего угла доски 
+int x_start = 300;
+int y_start = 1;
 
 
 
 
-void show(string position)
-{
-	// загрузка bitmap-а из файла:
-	HBITMAP hBmp = (HBITMAP)LoadImage(NULL, PESHKA, IMAGE_BITMAP, 30, 34, LR_LOADFROMFILE);
-	HBITMAP hBmp1 = (HBITMAP)LoadImage(NULL, DESK, IMAGE_BITMAP, 300, 300, LR_LOADFROMFILE);
-	cout << GetLastError();
-	SelectObject(bmpDC, hBmp1);
-	// вывод (wndDC - HDC окна):
-	BitBlt(hdc, x, y, width, height, bmpDC, 0, 0, SRCCOPY);
-
-	SelectObject(bmpDC, hBmp);
-	// вывод (wndDC - HDC окна):
-	BitBlt(hdc, x+13+30, y+13+34*2, width, height, bmpDC, 0, 0, SRCCOPY);
-	// освобождение ресурсов:           
-	DeleteDC(bmpDC);
-	DeleteObject(hBmp);
-	DeleteObject(hBmp1);
-}
-
-void translatePosition(string position, int* pos)
+void translatePosition(string position, unsigned short* pos)
 {
 	switch (position.at(0))
 	{
 	case 'A':
-	case 'a': pos[0] = 0;
+	case 'a': pos[0] = 0; 
 		break;
 	case 'B':
 	case 'b': pos[0] = 1;
@@ -73,27 +52,109 @@ void translatePosition(string position, int* pos)
 	case 'h': pos[0] = 7;
 		break;
 	}
-	pos[1] = position.at(1) - '0' - 1;
+	pos[1] = position.at(1) - '0' - 1; 
 }
 
-
-
-void gen()
+bool white_or_black_background(unsigned short i, unsigned short j) // 1 - white background of figure, 0 - black background of figure
 {
-	for (int i = 0; i < 8; i++)
+	if (i % 2 == 0)
 	{
-		for (int j = 0; j < 8; j++) cell[i][j] = rand();
+		if (j % 2 == 0) return 0;
+		else return 1;
 	}
-	cell[1][0] = 0;
-}
-void print()
-{
-	for (int i = 7; i >= 0; i--)
+	else
 	{
-		for (int j = 0; j < 8; j++) cout<< cell[i][j]<<"   ";
-		cout << endl;
+		if (j % 2 == 0) return 1;
+		else return 0;
 	}
 }
+
+void show() // сначало модифицируем массив cell, затем вызываем данную функцию
+{
+	unsigned short x = 0;
+	unsigned short y = 0; 
+	unsigned short figure = 0;  
+	HBITMAP hBmp = (HBITMAP)LoadImage(NULL, BOARD, IMAGE_BITMAP, 350, 350, LR_LOADFROMFILE);
+	SelectObject(bmpDC, hBmp);
+	// вывод (wndDC - HDC окна):  chessboard
+	BitBlt(hdc, x_start, y_start, width, height, bmpDC, 0, 0, SRCCOPY);
+	for (int i = 7; i >= 0; i--) {
+		for(int j = 0; j <8; j++){
+			figure = cell[i][j];
+			x = j * SIZECELL;
+			y = (i - 7) * (-1)* SIZECELL; // inversion - beginning at the bottom
+			if (figure == 0) continue;
+			else if (figure / 10 == 1) { // color (white)
+				switch (figure % 10) // type of figure
+				{
+					case 1:
+						if (white_or_black_background(i,j)) hBmp = (HBITMAP)LoadImage(NULL, WHITE_PAWN_WHITE, IMAGE_BITMAP, 35, 35, LR_LOADFROMFILE);
+						else hBmp = (HBITMAP)LoadImage(NULL, WHITE_PAWN_BLACK, IMAGE_BITMAP, 35, 35, LR_LOADFROMFILE);
+					break;
+					case 2:
+						if (white_or_black_background(i, j)) hBmp = (HBITMAP)LoadImage(NULL, WHITE_HORSE_WHITE, IMAGE_BITMAP, 35, 35, LR_LOADFROMFILE);
+						else hBmp = (HBITMAP)LoadImage(NULL, WHITE_HORSE_BLACK, IMAGE_BITMAP, 35, 35, LR_LOADFROMFILE);
+					break;
+					case 3:
+						if (white_or_black_background(i, j)) hBmp = (HBITMAP)LoadImage(NULL, WHITE_BISHOP_WHITE, IMAGE_BITMAP, 35, 35, LR_LOADFROMFILE);
+						else hBmp = (HBITMAP)LoadImage(NULL, WHITE_BISHOP_BLACK, IMAGE_BITMAP, 35, 35, LR_LOADFROMFILE);
+					break;
+					case 4:
+						if (white_or_black_background(i, j)) hBmp = (HBITMAP)LoadImage(NULL, WHITE_ROOK_WHITE, IMAGE_BITMAP, 35, 35, LR_LOADFROMFILE);
+						else hBmp = (HBITMAP)LoadImage(NULL, WHITE_ROOK_BLACK, IMAGE_BITMAP, 35, 35, LR_LOADFROMFILE);
+					break;
+					case 5:
+						if (white_or_black_background(i, j)) hBmp = (HBITMAP)LoadImage(NULL, WHITE_QUEEN_WHITE, IMAGE_BITMAP, 35, 35, LR_LOADFROMFILE);
+						else hBmp = (HBITMAP)LoadImage(NULL, WHITE_QUEEN_BLACK, IMAGE_BITMAP, 35, 35, LR_LOADFROMFILE);
+					break;
+					case 6:
+						if (white_or_black_background(i, j)) hBmp = (HBITMAP)LoadImage(NULL, WHITE_KING_WHITE, IMAGE_BITMAP, 35, 35, LR_LOADFROMFILE);
+						else hBmp = (HBITMAP)LoadImage(NULL, WHITE_KING_BLACK, IMAGE_BITMAP, 35, 35, LR_LOADFROMFILE);
+					break;
+				}
+			}
+			else if (figure / 10 == 2) // color (black)
+			{
+				switch (figure % 10) // type of figure
+				{
+					case 1:
+						if (white_or_black_background(i, j)) hBmp = (HBITMAP)LoadImage(NULL, BLACK_PAWN_WHITE, IMAGE_BITMAP, 35, 35, LR_LOADFROMFILE);
+						else hBmp = (HBITMAP)LoadImage(NULL, BLACK_PAWN_BLACK, IMAGE_BITMAP, 35, 35, LR_LOADFROMFILE);
+					break;
+					case 2:
+						if (white_or_black_background(i, j)) hBmp = (HBITMAP)LoadImage(NULL, BLACK_HORSE_WHITE, IMAGE_BITMAP, 35, 35, LR_LOADFROMFILE);
+						else hBmp = (HBITMAP)LoadImage(NULL, BLACK_HORSE_BLACK, IMAGE_BITMAP, 35, 35, LR_LOADFROMFILE);
+					break;
+					case 3:
+						if (white_or_black_background(i, j)) hBmp = (HBITMAP)LoadImage(NULL, BLACK_BISHOP_WHITE, IMAGE_BITMAP, 35, 35, LR_LOADFROMFILE);
+						else hBmp = (HBITMAP)LoadImage(NULL, BLACK_BISHOP_BLACK, IMAGE_BITMAP, 35, 35, LR_LOADFROMFILE);
+					break;
+					case 4:
+						if (white_or_black_background(i, j)) hBmp = (HBITMAP)LoadImage(NULL, BLACK_ROOK_WHITE, IMAGE_BITMAP, 35, 35, LR_LOADFROMFILE);
+						else hBmp = (HBITMAP)LoadImage(NULL, BLACK_ROOK_BLACK, IMAGE_BITMAP, 35, 35, LR_LOADFROMFILE);
+					break;
+					case 5:
+						if (white_or_black_background(i, j)) hBmp = (HBITMAP)LoadImage(NULL, BLACK_QUEEN_WHITE, IMAGE_BITMAP, 35, 35, LR_LOADFROMFILE);
+						else hBmp = (HBITMAP)LoadImage(NULL, BLACKE_QUEEN_BLACK, IMAGE_BITMAP, 35, 35, LR_LOADFROMFILE);
+					break;
+					case 6:
+						if (white_or_black_background(i, j)) hBmp = (HBITMAP)LoadImage(NULL, BLACK_KING_WHITE, IMAGE_BITMAP, 35, 35, LR_LOADFROMFILE);
+						else hBmp = (HBITMAP)LoadImage(NULL, BLACK_KING_BLACK, IMAGE_BITMAP, 35, 35, LR_LOADFROMFILE);
+					break;
+				}
+			}
+			
+			// загрузка bitmap-а из файла:
+			SelectObject(bmpDC, hBmp);
+			// вывод (wndDC - HDC окна):
+			BitBlt(hdc, x_start + 17 + x, y_start + 17 + y, width, height, bmpDC, 0, 0, SRCCOPY);
+		}
+	}
+	// освобождение ресурсов:
+	DeleteObject(hBmp);
+	DeleteDC(bmpDC);
+}
+
 
 bool motionCheck(string position) // 1 - ход возможен, 0 - хода нет
 {
@@ -101,10 +162,10 @@ bool motionCheck(string position) // 1 - ход возможен, 0 - хода �
 	int j = 0;
 	int step_j = 2;
 	int step_i = 2;
-	int i0[2] = { 0 };
+	unsigned short i0[2] = { 0 };
 	translatePosition(position, i0);
-	int color = cell[i0[1]][i0[0]] / 10;  // определение цвета игрока
-	i0[1] == 0 ? i = i0[1] : i = i0[1] - 1; // прописанные исключения
+	unsigned short color = cell[i0[1]][i0[0]] / 10;  // определение цвета игрока
+	i0[1] == 0 ? i = i0[1] : i = i0[1] - 1; // прописанные исключения; буквы - j, цифры - i
 	i0[0] == 0 ? j = i0[0] : j = i0[0] - 1;
 	i0[0] == 7 ? step_j = 1 : step_j = 2;
 	i0[1] == 7 ? step_i = 1 : step_i = 2;
@@ -129,96 +190,18 @@ bool motionCheck(string position) // 1 - ход возможен, 0 - хода �
 
 int main()
 {
-	//gen();
-	//print();
-	//cout<< "\n" <<motionCheck("a8");
-	show("0");
+	cell[0][0] = 14; cell[0][1] = 12; cell[0][2] = 13; cell[0][3] = 15;
+	cell[0][4] = 16; cell[0][5] = 13; cell[0][6] = 12; cell[0][7] = 14;
+	for (int i = 0; i < 8; i++)
+	{
+		cell[1][i] = 11;
+		cell[6][i] = 21;
+	}
+	cell[7][0] = 24; cell[7][1] = 22; cell[7][2] = 23; cell[7][3] = 25;
+	cell[7][4] = 26; cell[7][5] = 23; cell[7][6] = 22; cell[7][7] = 24;
+
+	cout<< "\n" <<motionCheck("e5");
+	show();
 	cin.get();
+	
 }
-
-
-
-
-
-/*
-#include <iostream>
-#include <Windows.h>
-
-HWND hwnd = GetConsoleWindow();
-HDC hdc = GetDC(hwnd);
-//class menu
-class Menu {
-private:
-	int user_choise = 0;
-
-	void menu_window() {
-		system("cls");
-		std::cout << "\tHello, stranger." << std::endl;
-		std::cout << "1. New game" << std::endl;
-		std::cout << "2. Reference" << std::endl;
-		std::cout << "3. Exit" << std::endl;
-		std::cout << "Your choise: ";
-	}
-
-public:
-	void New_game() {
-		system("cls");
-		std::cout << "New game have been starting!" << std::endl;
-		Sleep(1000);
-	}
-	void Reference() {
-		system("cls");
-		std::cout << "Write:" << std::endl;
-		std::cout << "1. \"Pass\" to surrender." << std::endl;
-		std::cout << "2. \"Draw\" to offer a draw." << std::endl;
-		std::cout << "Type enter to exit reference.";
-		std::cin.get();
-		std::cin.get();
-	}
-	void Exit() {
-		system("cls");
-		std::cout << "Thanks for playing. Good bye." << std::endl;
-	}
-	void Err_choise() {
-		system("cls");
-		std::cout << "It's wrong!" << std::endl;
-		Sleep(500);
-	}
-
-	int set_choise() {
-		menu_window();
-		std::cin >> user_choise;
-		if (std::cin.fail()) { // check error flags
-			std::cin.clear(); // clears error flags
-			std::cin.ignore(2323, '\n'); // ~ while(cin.get() != '\n');
-		}
-		return user_choise;
-	}
-	int give_choise() { return user_choise; }
-};
-
-
-int main()
-{
-	Menu game_menu;
-
-	switch (game_menu.set_choise()) {
-	case 1:
-		game_menu.New_game();
-		main();
-		break;
-	case 2:
-		game_menu.Reference();
-		main();
-		break;
-	case 3:
-		game_menu.Exit();
-		break;
-	default:
-		game_menu.Err_choise();
-		main();
-	}
-
-
-	return 0;
-}*/

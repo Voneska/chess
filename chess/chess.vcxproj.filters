@@ -20,8 +20,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="pictures\desk3.bmp">
-      <Filter>Файлы ресурсов</Filter>
-    </Image>
+    <ClInclude Include="pictures_of_figures.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

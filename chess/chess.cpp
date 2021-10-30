@@ -1,8 +1,112 @@
 ﻿#include <iostream>
 #include <Windows.h>
 
+using namespace std;
+
 HWND hwnd = GetConsoleWindow();
 HDC hdc = GetDC(hwnd);
+
+bool turn;
+
+
+
+class Chess
+{
+private:
+	unsigned short cell[8][8] = { 0 }, cell_from = 0, cell_to = 0;
+
+	void show()
+	{
+
+	}
+
+	bool game_end()
+	{
+
+	}
+
+public:
+
+	bool game_turn()
+	{
+
+		return 0;
+	}
+
+	unsigned short Get_cell_from()
+	{
+		return cell_from;
+	}
+
+	unsigned short check()
+	{
+
+		cout << "12" << endl;
+		return 11;
+	}
+
+	virtual bool check_to(unsigned short pos) { return 1; }
+
+};
+
+class Pawn : public Chess
+{
+public:
+	bool check_to(unsigned short pos) override
+	{
+
+		return 1;
+	}
+};
+
+class Horse : public Chess
+{
+public:
+	bool check_to(unsigned short pos) override
+	{
+
+	}
+};
+
+class Bishop : public Chess
+{
+public:
+	bool check_to(unsigned short pos) override
+	{
+
+	}
+};
+
+
+class Rook : public Chess
+{
+public:
+	bool check_to(unsigned short pos) override
+	{
+
+	}
+};
+
+class Queen : public Chess
+{
+public:
+	bool check_to(unsigned short pos) override
+	{
+
+	}
+};
+
+
+class King : public Chess
+{
+public:
+	bool check_to(unsigned short pos) override
+	{
+
+	}
+};
+
+
 //class menu
 class Menu {
 private:
@@ -20,7 +124,26 @@ private:
 public:
 	void New_game() {
 		system("cls");
-		std::cout << "New game have been starting!" << std::endl;
+		Chess* figure = new Chess;
+		bool flag = 1;
+		turn = 0;	
+		do{
+			unsigned short t = figure->check();
+
+			switch (figure->Get_cell_from() % 10)
+			{
+			case 1: figure = new Pawn;
+				break;
+			}
+
+			if (figure->check_to(t) == 0)
+			{
+				flag = 1;
+			}
+			else flag = 0;
+		} while (flag || figure->game_turn());
+
+		std::cout << "New game has been starting!" << std::endl;
 		Sleep(1000);
 	}
 	void Reference() {

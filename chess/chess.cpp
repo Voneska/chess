@@ -6,6 +6,35 @@ string white, black;
 unsigned short cell[8][8];
 bool turn = 0;//xod belix
 
+bool motionCheck(string position) // 1 - ход возможен, 0 - хода нет
+{
+	int i = 0;
+	int j = 0;
+	int step_j = 2;
+	int step_i = 2;
+	unsigned short i0[2] = { 0 };
+	translatePosition(position, i0);
+	unsigned short color = cell[i0[1]][i0[0]] / 10;  // определение цвета игрока
+	i0[1] == 0 ? i = i0[1] : i = i0[1] - 1; // прописанные исключения; буквы - j, цифры - i
+	i0[0] == 0 ? j = i0[0] : j = i0[0] - 1;
+	i0[0] == 7 ? step_j = 1 : step_j = 2;
+	i0[1] == 7 ? step_i = 1 : step_i = 2;
+	for (; i < i0[1] + step_i; i++)
+	{
+		for (; j < i0[0] + step_j; j++)
+		{
+			if (cell[i][j] == 0) return 1;
+			else if (cell[i][j] % 10 != color)
+			{
+				//if(!proverka_bit_kletki()) return 1; Вызывается проверка битой клетки, если клетка не бьется, то return 1;
+			}
+		}
+		if (i0[0] == 0 || i0[0] == 7) j -= 2;
+		else j -= 3;
+	}
+	return 0;
+}
+
 void translatePosition(string position, unsigned short* pos)
 {
 	switch (position.at(0))

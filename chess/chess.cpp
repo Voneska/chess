@@ -7,30 +7,24 @@ using namespace std;
 
 bool turn;
 
-
-
-
-
-bool white_or_black_background(unsigned short i, unsigned short j) // 1 - white background of figure, 0 - black background of figure
-{
-	if (i % 2 == 0)
-	{
-		if (j % 2 == 0) return 0;
-		else return 1;
-	}
-	else
-	{
-		if (j % 2 == 0) return 1;
-		else return 0;
-	}
-}
-
-
-
 class Chess
 {
 private:
 	unsigned short cell[8][8] = { 0 }, cell_from = 0, cell_to = 0;
+
+	bool white_or_black_background(unsigned short i, unsigned short j) // 1 - white background of figure, 0 - black background of figure
+	{
+		if (i % 2 == 0)
+		{
+			if (j % 2 == 0) return 0;
+			else return 1;
+		}
+		else
+		{
+			if (j % 2 == 0) return 1;
+			else return 0;
+		}
+	}
 
 	void show() // сначало модифицируем массив cell, затем вызываем данную функцию
 	{
@@ -256,34 +250,6 @@ public:
 		DeleteDC(bmpDC);
 	}
 };
-//class Figure
-//{
-//public:
-//	bool check_Pawn(unsigned short pos)
-//	{
-//		return 1;
-//	}
-//	bool check_Horse(unsigned short pos)
-//	{
-//		return 1;
-//	}
-//	bool check_Bishop(unsigned short pos)
-//	{
-//		return 1;
-//	}
-//	bool check_Rook(unsigned short pos)
-//	{
-//		return 1;
-//	}
-//	bool check_Queen(unsigned short pos)
-//	{
-//		return 1;
-//	}
-//	bool check_King(unsigned short pos)
-//	{
-//		return 1;
-//	}
-//};
 
 class Pawn : public Chess
 {
@@ -375,29 +341,16 @@ public:
 				switch (chess->get_figure())
 				{
 				case 1: figure = new Pawn;
-					//cout << "cell_to Pawn: " << figure->get_cell() << endl;
-					//if (figure.check_Pawn(buf) == 0)	flag = 1;
-					//else flag = 0;
 					break;
 				case 2: figure = new Horse;
-					//if (figure.check_Horse(buf) == 0)	flag = 1;
-					//else flag = 0;
 					break;
 				case 3: figure = new Bishop;
-					//if (figure.check_Bishop(buf) == 0)	flag = 1;
-					//else flag = 0;
 					break;
 				case 4: figure = new Rook;
-					//if (figure.check_Rook(buf) == 0)	flag = 1;
-					//else flag = 0;
 					break;
 				case 5: figure = new Queen;
-					//if (figure.check_Queen(buf) == 0)	flag = 1;
-					//else flag = 0;
 					break;
 				case 6: figure = new King;
-					//if (figure.check_King(buf) == 0)	flag = 1;
-					//else flag = 0;
 					break;
 				}
 				if (figure->check_to(buf) == 0)	flag = 1;

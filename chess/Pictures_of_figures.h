@@ -42,3 +42,13 @@
 
 
 #define SIZECELL 40
+#define X_START 400
+#define Y_START 1
+
+HWND hWnd = GetConsoleWindow();
+HDC hdc = GetDC(hWnd);
+// создание memory DC для этого bitmap-а:
+HDC bmpDC = CreateCompatibleDC(hdc);
+
+const unsigned short HEIGHT = GetDeviceCaps(hdc, VERTRES);
+const unsigned short WIDTH = GetDeviceCaps(hdc, HORZRES);

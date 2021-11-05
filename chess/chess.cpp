@@ -26,7 +26,8 @@ bool motionCheck(string position) // 1 - ход возможен, 0 - хода �
 			if (cell[i][j] == 0) return 1;
 			else if (cell[i][j] % 10 != color)
 			{
-				//if(!proverka_bit_kletki()) return 1; Вызывается проверка битой клетки, если клетка не бьется, то return 1;
+				unsigned short mas[2] = { i, j };
+				if(!chek_cell(mas)) return 1; //Вызывается проверка битой клетки, если клетка не бьется, то return 1;
 			}
 		}
 		if (i0[0] == 0 || i0[0] == 7) j -= 2;
@@ -66,6 +67,24 @@ void translatePosition(string position, unsigned short* pos)
 	}
 	pos[1] = position.at(1) - '0' - 1;
 }
+
+
+bool game_end()
+{
+	unsigned short king[2];
+	for(int i=0, bool t=0; i<8, t = 0;i++)
+		for (int j = 0; j < 8, t=0; j++)
+		{
+			if ((cell[i][j] / 10 == turn + 1) && (cell[i][j] % 10 == 6))
+			{
+				king[0] = i;
+				king[1] = j;
+				t = 1;
+			}
+		}
+}
+
+
 
 void gen_color()
 {
@@ -139,11 +158,14 @@ void start_cell()
 	cell[7][4] = 26; cell[7][5] = 23; cell[7][6] = 22; cell[7][7] = 24;
 }
 
-bool chek_cell(string s)//vozvrashaet 0 v slychae esli cletca ne bietsa
+
+
+
+
+bool chek_cell(unsigned short hod[2])//vozvrashaet 0 v slychae esli cletca ne bietsa
 {
-	unsigned short hod[2];
-	translatePosition(s, hod);
-	//krol + peski
+	//unsigned short hod[2];
+	//translatePosition(s, hod);
 	for (int i = hod[1] + 1; i < 8; i++)//n
 	{
 		if ((cell[i][hod[0]] / 10) == (turn + 1))  break;
@@ -232,7 +254,7 @@ bool chek_cell(string s)//vozvrashaet 0 v slychae esli cletca ne bietsa
 }
 int main()
 {
-	start_cell();
-	cout << chek_cell("b2") << endl; cout << chek_cell("b3") << endl; cout << chek_cell("b6") << endl; cout << chek_cell("h6") << endl; cout << chek_cell("e8") << endl;
+	//start_cell();
+	
 	return 0;
 }

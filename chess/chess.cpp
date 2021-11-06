@@ -10,7 +10,7 @@ bool turn;
 class Chess
 {
 private:
-	unsigned short cell[8][8] = { 0 }, cell_from = 0, cell_to = 0;
+	unsigned short cell[8][8], cell_from, cell_to;
 
 	bool white_or_black_background(unsigned short i, unsigned short j) // 1 - white background of figure, 0 - black background of figure
 	{
@@ -184,6 +184,12 @@ private:
 	}
 
 public:
+	Chess()
+	{
+		cell_from = 0;
+		cell_to = 0;
+		for (int i = 0; i < 8; ++i) for (int j = 0; j < 8; ++j) cell[i][j] = 0;
+	}
 
 	void start_cell()
 	{
@@ -230,7 +236,7 @@ public:
 		cell_from = i1[1] * 10 + i1[0];
 		cell_to = i2[1] * 10 + i2[0];
 
-		if (cell_from == 99 && cell_to == 99) return 9; // клетки нет
+		if (cell_from == 99 || cell_to == 99) return 9; // клетки нет
 		else if (cell[i1[1]][i1[0]] == 0) return 9;  // выбранная клетка от куда ходиться -  пуста
 		else if ((turn == 0 && cell[i1[1]][i1[0]] / 10 != 1) || (turn == 1 && cell[i1[1]][i1[0]] / 10 != 2)) return 9; // чужая фигура
 		else
@@ -240,9 +246,7 @@ public:
 		}
 	}
 
-	virtual bool check_to(unsigned short pos) { return 1; }
-
-	virtual unsigned int get_cell() { return cell_to; }
+	virtual bool check_to(unsigned short pos) { return 1; } // 1 - all is good; 0 - err
 
 	~Chess()
 	{
@@ -328,11 +332,12 @@ public:
 		system("cls");
 		Chess *chess = new Chess;
 		Chess *figure;
-		bool flag = 1;
+		bool flag = 0;
 		turn = 0;
 		unsigned short buf;
 		chess->start_cell();
 		do {
+			if (flag) cout << "Err. Try again\n";
 			figure = chess;
 			buf = chess->check();
 			if (buf == 9) flag = 1;

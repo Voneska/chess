@@ -6,11 +6,13 @@
 using namespace std;
 
 bool turn;
+int k = 0;
 
 class Chess
 {
 private:
 	unsigned short cell[8][8], cell_from, cell_to;
+
 
 	bool white_or_black_background(unsigned short i, unsigned short j) // 1 - white background of figure, 0 - black background of figure
 	{
@@ -114,6 +116,7 @@ private:
 	{
 		return 1;
 	}
+
 	void translatePosition(string position, unsigned short* pos) // 99 - err
 	{
 		if (size(position) == 2 && (position.at(1) > '0' && position.at(1) <= '8') && ((position.at(0) >= 'A' && position.at(0) <= 'H') || (position.at(0) >= 'a' && position.at(0) <= 'h')))
@@ -214,6 +217,7 @@ public:
 		show();
 		if (!game_end()) return 0;
 		turn = !turn;
+		k++;
 		return 1;
 	}
 
@@ -246,69 +250,52 @@ public:
 		}
 	}
 
-	virtual bool check_to(unsigned short pos) { return 1; } // 1 - all is good; 0 - err
+	unsigned short* get_cell()
+	{
+		unsigned short mas[2] = { cell_from, cell_to };
+		return (mas);
+	}
+	
+	class Figure
+	{
+	public:
+		bool check_pawn(unsigned short* mas)
+		{
+
+			return 1;
+		}
+
+		bool check_horse(unsigned short* mas)
+		{
+			return 1;
+		}
+
+		bool check_bishop(unsigned short* mas)
+		{
+			return 1;
+		}
+
+		bool check_rook(unsigned short* mas)
+		{
+			return 1;
+		}
+
+		bool check_queen(unsigned short* mas)
+		{
+			return 1;
+		}
+
+		bool check_king(unsigned short* mas)
+		{
+			return 1;
+		}
+
+	};
 
 	~Chess()
 	{
 		// освобождение ресурсов:
 		DeleteDC(bmpDC);
-	}
-};
-
-class Pawn : public Chess
-{
-public:
-	bool check_to(unsigned short pos) override
-	{
-
-		return 1;
-	}
-};
-
-class Horse : public Chess
-{
-public:
-	bool check_to(unsigned short pos) override
-	{
-		return 1;
-	}
-};
-
-class Bishop : public Chess
-{
-public:
-	bool check_to(unsigned short pos) override
-	{
-		return 1;
-	}
-};
-
-
-class Rook : public Chess
-{
-public:
-	bool check_to(unsigned short pos) override
-	{
-		return 1;
-	}
-};
-
-class Queen : public Chess
-{
-public:
-	bool check_to(unsigned short pos) override
-	{
-		return 1;
-	}
-};
-
-
-class King : public Chess
-{
-public:
-	bool check_to(unsigned short pos) override
-	{
-		return 1;
 	}
 };
 
@@ -328,43 +315,44 @@ private:
 	}
 
 public:
-	void New_game() {
+	void New_game() 
+	{
 		system("cls");
-		Chess *chess = new Chess;
-		Chess *figure;
+		Chess chess;
+		Chess::Figure figure;
 		bool flag = 0;
 		turn = 0;
-		unsigned short buf;
-		chess->start_cell();
+		k = 0;
+		bool check = 0;
+		chess.start_cell();
 		do {
 			if (flag) cout << "Err. Try again\n";
-			figure = chess;
-			buf = chess->check();
-			if (buf == 9) flag = 1;
+			if (chess.check() == 9) flag = 1;
 			else {
 				
-				switch (chess->get_figure())
+				switch (chess.get_figure())
 				{
-				case 1: figure = new Pawn;
+				case 1: check = figure.check_pawn(chess.get_cell());
 					break;
-				case 2: figure = new Horse;
+				case 2: check = figure.check_horse(chess.get_cell());
 					break;
-				case 3: figure = new Bishop;
+				case 3: check = figure.check_bishop(chess.get_cell());
 					break;
-				case 4: figure = new Rook;
+				case 4: check = figure.check_rook(chess.get_cell());
 					break;
-				case 5: figure = new Queen;
+				case 5: check = figure.check_queen(chess.get_cell());
 					break;
-				case 6: figure = new King;
+				case 6: check = figure.check_king(chess.get_cell());;
 					break;
 				}
-				if (figure->check_to(buf) == 0)	flag = 1;
+				if (check == 0)	flag = 1;
 				else flag = 0;
 			}
-		} while (flag || chess->game_turn());
+		} while (flag || chess.game_turn());
 
-		std::cout << "New game has been starting!" << std::endl;
-		Sleep(1000);
+		//std::cout << "New game has been starting!" << std::endl;
+		cin.get();
+		cin.get();
 	}
 	void Reference() {
 		system("cls");

@@ -175,7 +175,7 @@ private:
 			for (; j < i0[0] + step_j; j++)
 			{
 				if (cell[i][j] == 0) return 1;
-				else if (cell[i][j] % 10 != color) // можно ли съесть
+				else if (cell[i][j] / 10 != color) // можно ли съесть
 				{
 					//if(!proverka_bit_kletki()) return 1; Вызывается проверка битой клетки, если клетка не бьется, то return 1;
 				}
@@ -212,10 +212,10 @@ public:
 	{
 		cell[cell_to / 10][cell_to % 10] = cell[cell_from / 10][cell_from % 10];
 		cell[cell_from / 10][cell_from % 10] = 0;
-
 		system("cls");
 		show();
-		if (!game_end()) return 0;
+		if (k/2 < 2 && !game_end()) return 0;
+
 		turn = !turn;
 		k++;
 		return 1;
@@ -250,6 +250,9 @@ public:
 		}
 	}
 
+	unsigned short condition_cell_to() { return cell[cell_to / 10][cell_to % 10]; }
+	unsigned short condition_cell(int i, int j) { return cell[i][j]; }
+
 	unsigned short* get_cell()
 	{
 		unsigned short mas[2] = { cell_from, cell_to };
@@ -259,15 +262,36 @@ public:
 	class Figure
 	{
 	public:
-		bool check_pawn(unsigned short* mas)
+		bool check_pawn(unsigned short* mas, unsigned short condition_cell_to) // 0 - err, 1 - all is good
 		{
-
-			return 1;
+			if (turn == 0)
+			{
+				if ((mas[1] / 10 - mas[0] / 10) == 1 && (condition_cell_to == 0)) return 1;
+				else if (((mas[0] / 10) == 1) && ((mas[1] / 10 - mas[0] / 10) == 2) && (condition_cell_to == 0)) return 1;
+				else if (((mas[1] / 10 - mas[0] / 10) == 1) && ((mas[1] % 10 - mas[0] % 10) == 1) && (condition_cell_to != 0)) return 1; 
+				else if (((mas[1] / 10 - mas[0] / 10) == 1) && ((mas[0] % 10 - mas[1] % 10) == 1) && (condition_cell_to != 0)) return 1; 
+			}
+			else
+			{
+				if ((mas[0] / 10 - mas[1] / 10) == 1 && (condition_cell_to == 0)) return 1;
+				else if (((mas[0] / 10) == 6) && ((mas[0] / 10 - mas[1] / 10) == 2) && (condition_cell_to == 0)) return 1;
+				else if (((mas[0] / 10 - mas[1] / 10) == 1) && ((mas[0] % 10 - mas[1] % 10) == 1) && (condition_cell_to != 0)) return 1; 
+				else if (((mas[0] / 10 - mas[1] / 10) == 1) && ((mas[1] % 10 - mas[0] % 10) == 1) && (condition_cell_to != 0)) return 1; 
+			}
+			return 0;
 		}
 
 		bool check_horse(unsigned short* mas)
 		{
-			return 1;
+			if (((mas[1] / 10 - mas[0] / 10) == 2) && ((mas[1] % 10 - mas[0] % 10) == 1)) return 1;
+			if (((mas[1] / 10 - mas[0] / 10) == 2) && ((mas[0] % 10 - mas[1] % 10) == 1)) return 1;
+			if (((mas[0] / 10 - mas[1] / 10) == 2) && ((mas[0] % 10 - mas[1] % 10) == 1)) return 1;
+			if (((mas[0] / 10 - mas[1] / 10) == 2) && ((mas[1] % 10 - mas[0] % 10) == 1)) return 1;
+			if (((mas[1] % 10 - mas[0] % 10) == 2) && ((mas[1] / 10 - mas[0] / 10) == 1)) return 1;
+			if (((mas[1] % 10 - mas[0] % 10) == 2) && ((mas[0] / 10 - mas[1] / 10) == 1)) return 1;
+			if (((mas[0] % 10 - mas[1] % 10) == 2) && ((mas[0] / 10 - mas[1] / 10) == 1)) return 1;
+			if (((mas[0] % 10 - mas[1] % 10) == 2) && ((mas[1] / 10 - mas[0] / 10) == 1)) return 1;
+			return 0;
 		}
 
 		bool check_bishop(unsigned short* mas)
@@ -287,9 +311,16 @@ public:
 
 		bool check_king(unsigned short* mas)
 		{
-			return 1;
+			if ((mas[1] / 10 - mas[0] / 10) == 1) return 1;
+			if ((mas[0] / 10 - mas[1] / 10) == 1) return 1;
+			if ((mas[0] % 10 - mas[1] % 10) == 1) return 1;
+			if ((mas[1] % 10 - mas[0] % 10) == 1) return 1;
+			if (((mas[1] / 10 - mas[0] / 10) == 1) && ((mas[1] % 10 - mas[0] % 10))) return 1;
+			if (((mas[1] / 10 - mas[0] / 10) == 1) && ((mas[0] % 10 - mas[1] % 10))) return 1;
+			if (((mas[0] / 10 - mas[1] / 10) == 1) && ((mas[1] % 10 - mas[0] % 10))) return 1;
+			if (((mas[0] / 10 - mas[1] / 10) == 1) && ((mas[0] % 10 - mas[1] % 10))) return 1;
+			return 0;
 		}
-
 	};
 
 	~Chess()
@@ -332,7 +363,7 @@ public:
 				
 				switch (chess.get_figure())
 				{
-				case 1: check = figure.check_pawn(chess.get_cell());
+				case 1: check = figure.check_pawn(chess.get_cell(), chess.condition_cell_to());
 					break;
 				case 2: check = figure.check_horse(chess.get_cell());
 					break;

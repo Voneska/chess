@@ -251,7 +251,7 @@ public:
 	}
 
 	unsigned short condition_cell_to() { return cell[cell_to / 10][cell_to % 10]; }
-	unsigned short condition_cell(int i, int j) { return cell[i][j]; }
+	unsigned short condition_cell(unsigned short cell1) { return cell[cell1/10][cell1%10]; }
 
 	unsigned short* get_cell()
 	{
@@ -294,9 +294,13 @@ public:
 			return 0;
 		}
 
-		bool check_bishop(unsigned short* mas)
+		unsigned short check_bishop(unsigned short* mas)
 		{
-			return 1;
+			if ((mas[1] / 10 - mas[0] / 10) > 0 && (mas[1] / 10 - mas[0] / 10) == (mas[1] % 10 - mas[0] % 10)) return 1; //n-e from +=11
+			if ((mas[1] / 10 - mas[0] / 10) > 0 && (mas[1] / 10 - mas[0] / 10) == (mas[0] % 10 - mas[1] % 10)) return 2; //n-w from +=9
+			if ((mas[0] / 10 - mas[1] / 10) > 0 && (mas[0] / 10 - mas[1] / 10) == (mas[1] % 10 - mas[0] % 10)) return 3; // s-e from -=9
+			if ((mas[0] / 10 - mas[1] / 10) > 0 && (mas[0] / 10 - mas[1] / 10) == (mas[0] % 10 - mas[1] % 10)) return 4; // s-w from -=11
+			return 0;
 		}
 
 		bool check_rook(unsigned short* mas)
@@ -355,6 +359,7 @@ public:
 		turn = 0;
 		k = 0;
 		bool check = 0;
+		unsigned short* mas, i, j, check_bishop;
 		chess.start_cell();
 		do {
 			if (flag) cout << "Err. Try again\n";
@@ -367,7 +372,35 @@ public:
 					break;
 				case 2: check = figure.check_horse(chess.get_cell());
 					break;
-				case 3: check = figure.check_bishop(chess.get_cell());
+				case 3: 
+					mas = chess.get_cell();
+					check_bishop = figure.check_bishop(mas);
+					i = mas[1];
+					j = mas[0];
+					if (check_bishop != 0)
+					{
+						while(i != j)
+						{
+							switch (check_bishop) {
+							case 1: j += 11;
+								break;
+							case 2: j += 9;
+								break;
+							case 3: j -= 9;
+								break;
+							case 4:j -= 11;
+								break;
+							}
+							if (chess.condition_cell(j) != 0)
+							{
+								check = 0;
+								break;
+							}
+						}
+						if (i == j && chess.condition_cell_to() / 10 != turn+1) check = 1;
+					}
+					else check = 0;
+					
 					break;
 				case 4: check = figure.check_rook(chess.get_cell());
 					break;

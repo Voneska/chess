@@ -22,9 +22,7 @@ private:
 	  else if (turn == 1) cout << "Checkmate to the white King\n" << black << " wooooooon!!!\n";
   }
 
-  
-  
-  
+
   
    bool chek_cell(unsigned short hod[2]/*клетка потенциального удара*/, bool king/*учет удара короля*/)//vozvrashaet 0 v slychae esli cletca ne bietsa
 {
@@ -439,14 +437,14 @@ bool motionCheck(unsigned short i0[2]) // 1 - ход возможен, 0 - хо�
 				t = 1;
 			}
 		}
-	cout << king[0] << " " << king[1] << "\n";
+	
 	unsigned short attacker_kind, attacker_pos[2];
 	if (chek_cell(king, attacker_kind, attacker_pos) == 1)//шах
 	{
-	
+		
 		if (motionCheck(king) == 0)//хода нет
 		{
-		
+			
 			if ((abs(attacker_pos[1] - king[1]) <= 1) && (abs(attacker_pos[0] - king[0]) <= 1) && (chek_cell(attacker_pos, 1) == 0))//king
 			{
 				turn = not(turn);
@@ -494,20 +492,20 @@ bool motionCheck(unsigned short i0[2]) // 1 - ход возможен, 0 - хо�
 				}
 				else
 				{
+					
 					if ((king[0] < attacker_pos[0]) && (king[1] < attacker_pos[1]))
 						for (unsigned short pos[2] = { king[0] + 2,king[1] + 2 }; pos[0] <= attacker_pos[0] && pos[1] <= attacker_pos[1]; pos[0]++, pos[1]++)//n-e
 							if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn+1) * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
 					if ((king[0] > attacker_pos[0]) && (king[1] > attacker_pos[1]))
 						for (unsigned short pos[2] = { king[0] - 2,king[1] - 2 }; pos[0] >= attacker_pos[0] && pos[1] >= attacker_pos[1]; pos[0]--, pos[1]--)//s-w
 							if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]]; turn = not(turn); cell[pos[1]][pos[0]] = (turn+1) * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
-					if ((king[0] < attacker_pos[0]) && (king[1] > attacker_pos[1]))
-						for (unsigned short pos[2] = { king[0] + 2,king[1] - 2 }; pos[0] <= attacker_pos[0] && pos[1] >= attacker_pos[1]; pos[0]++, pos[1]--)//s-e
-							if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn+1) * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
 					if ((king[0] > attacker_pos[0]) && (king[1] < attacker_pos[1]))
+						for (unsigned short pos[2] = { king[0] + 2,king[1] - 2 }; pos[0] <= attacker_pos[0] && pos[1] >= attacker_pos[1]; pos[0]++, pos[1]--)//s-e
+							if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn + 1) * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
+					if ((king[0] < attacker_pos[0]) && (king[1] > attacker_pos[1]))
 						for (unsigned short pos[2] = { king[0] - 2,king[1] + 2 }; pos[0] >= attacker_pos[0] && pos[1] <= attacker_pos[1]; pos[0]--, pos[1]++)//n-w
 							if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn+1) * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
 				}
-
 
 				if (buff == 99) turn = not(turn);
 				if (chek_cell(king, 0) == 1) { turn = not(turn); victory(); return 1; }
@@ -546,8 +544,9 @@ public:
 	}
   
   
-bool last_check(const unsigned short* mas)//1 esli king pod ydarom
+bool last_check()//1 esli king pod ydarom
 {
+	unsigned short* mas = get_cell();
 	unsigned short buff = cell[mas[1] / 10][mas[1] % 10];
 	cell[mas[1] / 10][mas[1] % 10] = cell[mas[0] / 10][mas[0] % 10];
 	cell[mas[0] / 10][mas[0] % 10] = 0;
@@ -596,8 +595,7 @@ bool last_check(const unsigned short* mas)//1 esli king pod ydarom
 	
 		system("cls");
 		show();
-		if (k/2 < 2 && !game_end()) return 0;
-
+		if (k/2 >= 2 && game_end()) return 0;
 		turn = !turn;
 		k++;
 		return 1;
@@ -632,8 +630,7 @@ bool last_check(const unsigned short* mas)//1 esli king pod ydarom
 		}
 	}
 
-	unsigned short condition_cell_to() { return cell[cell_to / 10][cell_to % 10]; }
-	unsigned short condition_cell(unsigned short cell1) { return cell[cell1/10][cell1%10]; }
+	unsigned short condition_cell(unsigned short cell1) { return cell[cell1/10][cell1%10]; } // Возвращает значение клетки доски
 
 	unsigned short* get_cell()
 	{
@@ -660,7 +657,7 @@ public:
 	bool check_figure(Chess& chess) override// 0 - err, 1 - all is good
 	{
 		unsigned short* mas = chess.get_cell();
-		unsigned short condition_cell_to = chess.condition_cell_to();
+		unsigned short condition_cell_to = chess.condition_cell(mas[1]);
 		if (turn == 0)
 		{
 			if (((mas[1] / 10 - mas[0] / 10) == 1) && (mas[1] % 10 == mas[0] % 10) && (condition_cell_to == 0)) return 1;
@@ -709,12 +706,11 @@ public:
 		else if ((mas[0] / 10 - mas[1] / 10) > 0 && (mas[0] / 10 - mas[1] / 10) == (mas[1] % 10 - mas[0] % 10)) check_bishop = 3; // s-e from -=9
 		else if ((mas[0] / 10 - mas[1] / 10) > 0 && (mas[0] / 10 - mas[1] / 10) == (mas[0] % 10 - mas[1] % 10)) check_bishop = 4; // s-w from -=11
 		else return 0;
-		unsigned short i, j;
-		i = mas[1];
+		unsigned short  j;
 		j = mas[0];
 		if (check_bishop != 0)
 		{
-			while (i != j)
+			while (mas[1] != j)
 			{
 				switch (check_bishop) {
 				case 1: j += 11;
@@ -731,7 +727,7 @@ public:
 					return 0;
 				}
 			}
-			if (i == j && chess.condition_cell_to() / 10 != turn + 1) return 1;
+			if (mas[1] == j && chess.condition_cell(mas[1]) / 10 != turn + 1) return 1;
 		}
 		else return 0;
 	}
@@ -747,18 +743,17 @@ public:
 	{
 		unsigned short word = mas[0] % 10;
 		/*if (mas[0] / 10 == mas[1] / 10) return 0;
-		else*/ if (mas[0] / 10 < mas[1] / 10) for (int i = mas[0] / 10 + 1; i < mas[1] / 10; i++) if (cell[i][word] / 10 != 0) return 0;
-		else for (int i = mas[0] / 10 - 1; i > mas[1] / 10; i--) if (cell[i][word] / 10 != 0) return 0;
+		else*/ if (mas[0] / 10 < mas[1] / 10) for (int i = mas[0] / 10 + 1; i < mas[1] / 10; i++) if (chess.condition_cell(i*10+word) / 10 != 0) return 0;
+		else for (int i = mas[0] / 10 - 1; i > mas[1] / 10; i--) if (chess.condition_cell(i * 10 + word) / 10 != 0) return 0;
 	}
 	else if (mas[0] / 10 == mas[1] / 10)//e,w
 	{
 		unsigned short number = mas[0] / 10;
 		/*if (mas[0] % 10 == mas[1] % 10) return 0;
-		else*/ if (mas[0] % 10 < mas[1] % 10) for (int i = mas[0] % 10 + 1; i < mas[1] % 10; i++) if (cell[number][i] / 10 != 0) return 0;
-		else for (int i = mas[0] % 10 - 1; i > mas[1] % 10; i--) if (cell[number][i] / 10 != 0) return 0;
+		else*/ if (mas[0] % 10 < mas[1] % 10) for (int i = mas[0] % 10 + 1; i < mas[1] % 10; i++) if (chess.condition_cell(number * 10 + i) / 10 != 0) return 0;
+		else for (int i = mas[0] % 10 - 1; i > mas[1] % 10; i--) if (chess.condition_cell(number * 10 + i) / 10 != 0) return 0;
 	}
 	else return 0;
-	if (last_check(mas) == 1) return 0;
 	return 1;
 	}
 };
@@ -773,33 +768,32 @@ public:
 	{
 		unsigned short word = mas[0] % 10;
 		if (mas[0] / 10 == mas[1] / 10) return 0;
-		else if (mas[0] / 10 < mas[1] / 10) for (int i = mas[0] / 10 + 1; i < mas[1] / 10; i++) if (cell[i][word] / 10 != 0) return 0;
-		else for (int i = mas[0] / 10 - 1; i > mas[1] / 10; i--) if (cell[i][word] / 10 != 0) return 0;
+		else if (mas[0] / 10 < mas[1] / 10) for (int i = mas[0] / 10 + 1; i < mas[1] / 10; i++) if (chess.condition_cell(i * 10 + word) / 10 != 0) return 0;
+		else for (int i = mas[0] / 10 - 1; i > mas[1] / 10; i--) if (chess.condition_cell(i * 10 + word) / 10 != 0) return 0;
 	}
 	else if (mas[0] / 10 == mas[1] / 10)//e,w
 	{
 		unsigned short number = mas[0] / 10;
-		if (mas[0] % 10 < mas[1] % 10) for (int i = mas[0] % 10 + 1; i < mas[1] % 10; i++) if (cell[number][i] / 10 != 0) return 0;
-		else for (int i = mas[0] % 10 - 1; i > mas[1] % 10; i--) if (cell[number][i] / 10 != 0) return 0;
+		if (mas[0] % 10 < mas[1] % 10) for (int i = mas[0] % 10 + 1; i < mas[1] % 10; i++) if (chess.condition_cell(number * 10 + i) / 10 != 0) return 0;
+		else for (int i = mas[0] % 10 - 1; i > mas[1] % 10; i--) if (chess.condition_cell(number * 10 + i) / 10 != 0) return 0;
 	}
 	else if (abs(mas[0] % 10 - mas[1] % 10) == abs(mas[0] / 10 - mas[1] / 10))//raznosti kletok po bykvam i chislam
 	{
 		unsigned short pos_to[2] = { mas[1] / 10, mas[1] % 10 };//pos_to[0]-chifra  pos_to[1]-bykva
 		if ((mas[0] / 10 < pos_to[0]) && (mas[0] % 10 < pos_to[1]))
 			for (unsigned short pos[2] = { mas[0] / 10 + 1,mas[0] % 10 + 1 }; pos[0] < pos_to[0] && pos[1] < pos_to[1]; pos[0]++, pos[1]++)//n-e
-				if (cell[pos[0]][pos[1]] / 10 != 0) return 0;
+				if (chess.condition_cell(pos[0]* 10 + pos[1]) / 10 != 0) return 0;
 		if ((mas[0] / 10 > pos_to[0]) && (mas[0] % 10 > pos_to[1]))
 			for (unsigned short pos[2] = { mas[0] / 10 - 1,mas[0] % 10 - 1 }; pos[0] > pos_to[0] && pos[1] > pos_to[1]; pos[0]--, pos[1]--)//s-w
-				if (cell[pos[0]][pos[1]] / 10 != 0) return 0;
+				if (chess.condition_cell(pos[0] * 10 + pos[1]) / 10 != 0) return 0;
 		if ((mas[0] % 10 < pos_to[1]) && (mas[0] / 10 > pos_to[0]))
 			for (unsigned short pos[2] = { mas[0] / 10 - 1,mas[0] % 10 + 1 }; pos[0] > pos_to[0] && pos[1] < pos_to[1]; pos[0]--, pos[1]++)//s-e
-				if (cell[pos[0]][pos[1]] / 10 != 0) return 0;
+				if (chess.condition_cell(pos[0] * 10 + pos[1]) / 10 != 0) return 0;
 		if ((mas[0] % 10 > pos_to[1]) && (mas[0] / 10 < pos_to[0]))
 			for (unsigned short pos[2] = { mas[0] / 10 + 1,mas[0] % 10 - 1 }; pos[0] < pos_to[0] && pos[1] > pos_to[1]; pos[0]++, pos[1]--)//n-w
-				if (cell[pos[0]][pos[1]] / 10 != 0) return 0;
+				if (chess.condition_cell(pos[0] * 10 + pos[1]) / 10 != 0) return 0;
 	}
 	else return 0;
-	if (last_check(mas) == 1) return 0;
 	return 1;
 	}
 };
@@ -902,8 +896,8 @@ public:
 		turn = 0;
 		k = 0;
 		bool check = 0;
+		choose_player();
 		chess.start_cell();
-    choose_player();
 		do {
 			if (flag) cout << "Err. Try again\n";
 			if (chess.check() == 9) flag = 1;
@@ -927,7 +921,7 @@ public:
 				check = figure->check_figure(chess);
 				if (check == 0)	flag = 1;
 				else {
-					//if (last_check) flag = 1;
+					if (chess.last_check()) flag = 1;
 					 flag = 0;
 				}
 			}

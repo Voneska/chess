@@ -262,75 +262,132 @@ public:
 	class Figure
 	{
 	public:
-		bool check_pawn(unsigned short* mas, unsigned short condition_cell_to) // 0 - err, 1 - all is good
-		{
-			if (turn == 0)
-			{
-				if ((mas[1] / 10 - mas[0] / 10) == 1 && (condition_cell_to == 0)) return 1;
-				else if (((mas[0] / 10) == 1) && ((mas[1] / 10 - mas[0] / 10) == 2) && (condition_cell_to == 0)) return 1;
-				else if (((mas[1] / 10 - mas[0] / 10) == 1) && ((mas[1] % 10 - mas[0] % 10) == 1) && (condition_cell_to != 0)) return 1; 
-				else if (((mas[1] / 10 - mas[0] / 10) == 1) && ((mas[0] % 10 - mas[1] % 10) == 1) && (condition_cell_to != 0)) return 1; 
-			}
-			else
-			{
-				if ((mas[0] / 10 - mas[1] / 10) == 1 && (condition_cell_to == 0)) return 1;
-				else if (((mas[0] / 10) == 6) && ((mas[0] / 10 - mas[1] / 10) == 2) && (condition_cell_to == 0)) return 1;
-				else if (((mas[0] / 10 - mas[1] / 10) == 1) && ((mas[0] % 10 - mas[1] % 10) == 1) && (condition_cell_to != 0)) return 1; 
-				else if (((mas[0] / 10 - mas[1] / 10) == 1) && ((mas[1] % 10 - mas[0] % 10) == 1) && (condition_cell_to != 0)) return 1; 
-			}
-			return 0;
-		}
-
-		bool check_horse(unsigned short* mas)
-		{
-			if (((mas[1] / 10 - mas[0] / 10) == 2) && ((mas[1] % 10 - mas[0] % 10) == 1)) return 1;
-			if (((mas[1] / 10 - mas[0] / 10) == 2) && ((mas[0] % 10 - mas[1] % 10) == 1)) return 1;
-			if (((mas[0] / 10 - mas[1] / 10) == 2) && ((mas[0] % 10 - mas[1] % 10) == 1)) return 1;
-			if (((mas[0] / 10 - mas[1] / 10) == 2) && ((mas[1] % 10 - mas[0] % 10) == 1)) return 1;
-			if (((mas[1] % 10 - mas[0] % 10) == 2) && ((mas[1] / 10 - mas[0] / 10) == 1)) return 1;
-			if (((mas[1] % 10 - mas[0] % 10) == 2) && ((mas[0] / 10 - mas[1] / 10) == 1)) return 1;
-			if (((mas[0] % 10 - mas[1] % 10) == 2) && ((mas[0] / 10 - mas[1] / 10) == 1)) return 1;
-			if (((mas[0] % 10 - mas[1] % 10) == 2) && ((mas[1] / 10 - mas[0] / 10) == 1)) return 1;
-			return 0;
-		}
-
-		unsigned short check_bishop(unsigned short* mas)
-		{
-			if ((mas[1] / 10 - mas[0] / 10) > 0 && (mas[1] / 10 - mas[0] / 10) == (mas[1] % 10 - mas[0] % 10)) return 1; //n-e from +=11
-			if ((mas[1] / 10 - mas[0] / 10) > 0 && (mas[1] / 10 - mas[0] / 10) == (mas[0] % 10 - mas[1] % 10)) return 2; //n-w from +=9
-			if ((mas[0] / 10 - mas[1] / 10) > 0 && (mas[0] / 10 - mas[1] / 10) == (mas[1] % 10 - mas[0] % 10)) return 3; // s-e from -=9
-			if ((mas[0] / 10 - mas[1] / 10) > 0 && (mas[0] / 10 - mas[1] / 10) == (mas[0] % 10 - mas[1] % 10)) return 4; // s-w from -=11
-			return 0;
-		}
-
-		bool check_rook(unsigned short* mas)
-		{
-			return 1;
-		}
-
-		bool check_queen(unsigned short* mas)
-		{
-			return 1;
-		}
-
-		bool check_king(unsigned short* mas)
-		{
-			if ((mas[1] / 10 - mas[0] / 10) == 1) return 1;
-			if ((mas[0] / 10 - mas[1] / 10) == 1) return 1;
-			if ((mas[0] % 10 - mas[1] % 10) == 1) return 1;
-			if ((mas[1] % 10 - mas[0] % 10) == 1) return 1;
-			if (((mas[1] / 10 - mas[0] / 10) == 1) && ((mas[1] % 10 - mas[0] % 10))) return 1;
-			if (((mas[1] / 10 - mas[0] / 10) == 1) && ((mas[0] % 10 - mas[1] % 10))) return 1;
-			if (((mas[0] / 10 - mas[1] / 10) == 1) && ((mas[1] % 10 - mas[0] % 10))) return 1;
-			if (((mas[0] / 10 - mas[1] / 10) == 1) && ((mas[0] % 10 - mas[1] % 10))) return 1;
-			return 0;
-		}
+		virtual bool check_figure(Chess& chess) { return 1; }
 	};
 
 	~Chess()
 	{
 		// освобождение ресурсов:
 		DeleteDC(bmpDC);
+	}
+};
+
+class Pawn : public Chess::Figure
+{
+public:	
+	bool check_figure(Chess& chess) override// 0 - err, 1 - all is good
+	{
+		unsigned short* mas = chess.get_cell();
+		unsigned short condition_cell_to = chess.condition_cell_to();
+		if (turn == 0)
+		{
+			if (((mas[1] / 10 - mas[0] / 10) == 1) && (mas[1] % 10 == mas[0] % 10) && (condition_cell_to == 0)) return 1;
+			else if (((mas[0] / 10) == 1) && ((mas[1] / 10 - mas[0] / 10) == 2) && (mas[1] % 10 == mas[0] % 10) && (condition_cell_to == 0)) return 1;
+			else if (((mas[1] / 10 - mas[0] / 10) == 1) && ((mas[1] % 10 - mas[0] % 10) == 1) && (condition_cell_to != 0)) return 1;
+			else if (((mas[1] / 10 - mas[0] / 10) == 1) && ((mas[0] % 10 - mas[1] % 10) == 1) && (condition_cell_to != 0)) return 1;
+		}
+		else
+		{
+			if (((mas[0] / 10 - mas[1] / 10) == 1) && (mas[1] % 10 == mas[0] % 10) && (condition_cell_to == 0)) return 1;
+			else if (((mas[0] / 10) == 6) && ((mas[0] / 10 - mas[1] / 10) == 2) && (mas[1] % 10 == mas[0] % 10) && (condition_cell_to == 0)) return 1;
+			else if (((mas[0] / 10 - mas[1] / 10) == 1) && ((mas[0] % 10 - mas[1] % 10) == 1) && (condition_cell_to != 0)) return 1;
+			else if (((mas[0] / 10 - mas[1] / 10) == 1) && ((mas[1] % 10 - mas[0] % 10) == 1) && (condition_cell_to != 0)) return 1;
+		}
+		return 0;
+	}
+};
+
+class Horse : public Chess::Figure
+{
+public: 		
+	bool check_figure(Chess& chess) override
+	{
+		unsigned short* mas = chess.get_cell();
+		if (((mas[1] / 10 - mas[0] / 10) == 2) && ((mas[1] % 10 - mas[0] % 10) == 1)) return 1;
+		if (((mas[1] / 10 - mas[0] / 10) == 2) && ((mas[0] % 10 - mas[1] % 10) == 1)) return 1;
+		if (((mas[0] / 10 - mas[1] / 10) == 2) && ((mas[0] % 10 - mas[1] % 10) == 1)) return 1;
+		if (((mas[0] / 10 - mas[1] / 10) == 2) && ((mas[1] % 10 - mas[0] % 10) == 1)) return 1;
+		if (((mas[1] % 10 - mas[0] % 10) == 2) && ((mas[1] / 10 - mas[0] / 10) == 1)) return 1;
+		if (((mas[1] % 10 - mas[0] % 10) == 2) && ((mas[0] / 10 - mas[1] / 10) == 1)) return 1;
+		if (((mas[0] % 10 - mas[1] % 10) == 2) && ((mas[0] / 10 - mas[1] / 10) == 1)) return 1;
+		if (((mas[0] % 10 - mas[1] % 10) == 2) && ((mas[1] / 10 - mas[0] / 10) == 1)) return 1;
+		return 0;
+	}
+};
+
+class Bishop : public Chess::Figure
+{
+public: 
+	bool check_figure(Chess& chess) override
+	{
+		unsigned short* mas, check_bishop;
+		mas = chess.get_cell();
+		if ((mas[1] / 10 - mas[0] / 10) > 0 && (mas[1] / 10 - mas[0] / 10) == (mas[1] % 10 - mas[0] % 10)) check_bishop = 1; //n-e from +=11
+		else if ((mas[1] / 10 - mas[0] / 10) > 0 && (mas[1] / 10 - mas[0] / 10) == (mas[0] % 10 - mas[1] % 10)) check_bishop = 2; //n-w from +=9
+		else if ((mas[0] / 10 - mas[1] / 10) > 0 && (mas[0] / 10 - mas[1] / 10) == (mas[1] % 10 - mas[0] % 10)) check_bishop = 3; // s-e from -=9
+		else if ((mas[0] / 10 - mas[1] / 10) > 0 && (mas[0] / 10 - mas[1] / 10) == (mas[0] % 10 - mas[1] % 10)) check_bishop = 4; // s-w from -=11
+		else return 0;
+		unsigned short i, j;
+		i = mas[1];
+		j = mas[0];
+		if (check_bishop != 0)
+		{
+			while (i != j)
+			{
+				switch (check_bishop) {
+				case 1: j += 11;
+					break;
+				case 2: j += 9;
+					break;
+				case 3: j -= 9;
+					break;
+				case 4:j -= 11;
+					break;
+				}
+				if (chess.condition_cell(j) != 0)
+				{
+					return 0;
+				}
+			}
+			if (i == j && chess.condition_cell_to() / 10 != turn + 1) return 1;
+		}
+		else return 0;
+	}
+};
+
+class Rook : public Chess::Figure
+{
+public: 
+	bool check_figure(Chess& chess) override
+	{
+		return 1;
+	}
+};
+
+class Queen : public Chess::Figure
+{
+public: 
+	bool check_figure(Chess& chess) override
+	{
+		return 1;
+	}
+};
+
+class King : public Chess::Figure
+{
+public:
+	bool check_figure(Chess& chess) override
+	{
+		unsigned short* mas = chess.get_cell();
+		if ((mas[1] / 10 - mas[0] / 10) == 1 && (mas[0]%10 == mas[1]%10)) return 1;
+		if ((mas[0] / 10 - mas[1] / 10) == 1 && (mas[0] % 10 == mas[1] % 10)) return 1;
+		if ((mas[0] % 10 - mas[1] % 10) == 1 && (mas[0] / 10 == mas[1] / 10)) return 1;
+		if ((mas[1] % 10 - mas[0] % 10) == 1 && (mas[0] / 10 == mas[1] / 10)) return 1;
+		if (((mas[1] / 10 - mas[0] / 10) == 1) && ((mas[1] % 10 - mas[0] % 10) == 1)) return 1;
+		if (((mas[1] / 10 - mas[0] / 10) == 1) && ((mas[0] % 10 - mas[1] % 10) == 1)) return 1;
+		if (((mas[0] / 10 - mas[1] / 10) == 1) && ((mas[1] % 10 - mas[0] % 10) == 1)) return 1;
+		if (((mas[0] / 10 - mas[1] / 10) == 1) && ((mas[0] % 10 - mas[1] % 10) == 1)) return 1;
+		return 0;
 	}
 };
 
@@ -354,12 +411,11 @@ public:
 	{
 		system("cls");
 		Chess chess;
-		Chess::Figure figure;
+		Chess::Figure* figure = nullptr;
 		bool flag = 0;
 		turn = 0;
 		k = 0;
 		bool check = 0;
-		unsigned short* mas, i, j, check_bishop;
 		chess.start_cell();
 		do {
 			if (flag) cout << "Err. Try again\n";
@@ -368,49 +424,25 @@ public:
 				
 				switch (chess.get_figure())
 				{
-				case 1: check = figure.check_pawn(chess.get_cell(), chess.condition_cell_to());
+				case 1: figure = new Pawn;
 					break;
-				case 2: check = figure.check_horse(chess.get_cell());
+				case 2: figure = new Horse;
 					break;
-				case 3: 
-					mas = chess.get_cell();
-					check_bishop = figure.check_bishop(mas);
-					i = mas[1];
-					j = mas[0];
-					if (check_bishop != 0)
-					{
-						while(i != j)
-						{
-							switch (check_bishop) {
-							case 1: j += 11;
-								break;
-							case 2: j += 9;
-								break;
-							case 3: j -= 9;
-								break;
-							case 4:j -= 11;
-								break;
-							}
-							if (chess.condition_cell(j) != 0)
-							{
-								check = 0;
-								break;
-							}
-						}
-						if (i == j && chess.condition_cell_to() / 10 != turn+1) check = 1;
-					}
-					else check = 0;
-					
+				case 3: figure = new Bishop;
 					break;
-				case 4: check = figure.check_rook(chess.get_cell());
+				case 4: figure = new Rook;
 					break;
-				case 5: check = figure.check_queen(chess.get_cell());
+				case 5: figure = new Queen;
 					break;
-				case 6: check = figure.check_king(chess.get_cell());;
+				case 6: figure = new King;
 					break;
 				}
+				check = figure->check_figure(chess);
 				if (check == 0)	flag = 1;
-				else flag = 0;
+				else {
+					//if (last_check) flag = 1;
+					 flag = 0;
+				}
 			}
 		} while (flag || chess.game_turn());
 

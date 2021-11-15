@@ -1,10 +1,12 @@
 #include <iostream>
 #include <Windows.h>
+#include<ctime>
 #include <string>
 #include "pictures_of_figures.h"
 
 using namespace std;
 
+string white, black;
 bool turn;
 int k = 0;
 
@@ -12,8 +14,243 @@ class Chess
 {
 private:
 	unsigned short cell[8][8], cell_from, cell_to;
+  
+  void victory()
+  {
+	  if (turn == 0)
+	  	cout << "Checkmate to the black King\n" << white << " wooooooon!!!\n";
+	  else if (turn == 1) cout << "Checkmate to the white King\n" << black << " wooooooon!!!\n";
+  }
 
+  
+  
+  
+  
+   bool chek_cell(unsigned short hod[2]/*клетка потенциального удара*/, bool king/*учет удара короля*/)//vozvrashaet 0 v slychae esli cletca ne bietsa
+{
+	//unsigned short hod[2];
+	//translatePosition(s, hod);
+	for (int i = hod[1] + 1; i < 8; i++)//n
+	{
+		if ((cell[i][hod[0]] / 10) == (turn + 1))  break;
+		if ((cell[i][hod[0]] / 10) != 0)
+			if (((cell[i][hod[0]] % 10) == 4) || ((cell[i][hod[0]] % 10) == 5)) return 1;
+			else break;
+	}
+	for (int i = hod[1] - 1; i >= 0; i--)//s
+	{
+		if ((cell[i][hod[0]] / 10) == (turn + 1))  break;
+		if ((cell[i][hod[0]] / 10) != 0)
+			if (((cell[i][hod[0]] % 10) == 4) || ((cell[i][hod[0]] % 10) == 5)) return 1;
+			else break;
+	}
+	for (int i = hod[0] + 1; i < 8; i++)//e
+	{
+		if ((cell[hod[1]][i] / 10) == (turn + 1))  break;
+		if ((cell[hod[1]][i] / 10) != 0)
+			if (((cell[hod[1]][i] % 10) == 4) || ((cell[hod[1]][i] % 10) == 5)) return 1;
+			else break;
+	}
+	for (int i = hod[0] - 1; i >= 0; i--)//w
+	{
+		if ((cell[hod[1]][i] / 10) == (turn + 1))  break;
+		if ((cell[hod[1]][i] / 10) != 0)
+			if (((cell[hod[1]][i] % 10) == 4) || ((cell[hod[1]][i] % 10) == 5)) return 1;
+			else break;
+	}
+	for (int i = hod[1] + 1, j = hod[0] + 1; j < 8 && i < 8; j++, i++)//n-e
+	{
+		if ((cell[i][j] / 10) == (turn + 1))  break;
+		if ((cell[i][j] / 10) != 0)
+			if (((cell[i][j] % 10) == 3) || ((cell[i][j] % 10) == 5)) return 1;
+			else break;
+	}
+	for (int i = hod[1] - 1, j = hod[0] - 1; j >= 0 && i >= 0; j--, i--)//s-w
+	{
+		if ((cell[i][j] / 10) == (turn + 1))  break;
+		if ((cell[i][j] / 10) != 0)
+			if (((cell[i][j] % 10) == 3) || ((cell[i][j] % 10) == 5)) return 1;
+			else break;
+	}
+	for (int i = hod[1] - 1, j = hod[0] + 1; j < 8 && i >= 0; j++, i--)//s-e
+	{
+		if ((cell[i][j] / 10) == (turn + 1))  break;
+		if ((cell[i][j] / 10) != 0)
+			if (((cell[i][j] % 10) == 3) || ((cell[i][j] % 10) == 5)) return 1;
+			else break;
+	}
+	for (int i = hod[1] + 1, j = hod[0] - 1; j >= 0 && i < 8; j--, i++)//n-w
+	{
+		if ((cell[i][j] / 10) == (turn + 1))  break;
+		if ((cell[i][j] / 10) != 0)
+			if (((cell[i][j] % 10) == 3) || ((cell[i][j] % 10) == 5)) return 1;
+			else break;
+	}
+	if ((hod[1] + 2 < 8) && (hod[0] + 1 < 8) && (cell[hod[1] + 2][hod[0] + 1] % 10 == 2) && (cell[hod[1] + 2][hod[0] + 1] / 10 != turn + 1)) return 1;//horse
+	if ((hod[1] + 1 < 8) && (hod[0] + 2 < 8) && (cell[hod[1] + 1][hod[0] + 2] % 10 == 2) && (cell[hod[1] + 1][hod[0] + 2] / 10 != turn + 1)) return 1;
+	if ((hod[1] + 2 < 8) && (hod[0] - 1 >= 0) && (cell[hod[1] + 2][hod[0] - 1] % 10 == 2) && (cell[hod[1] + 2][hod[0] - 1] / 10 != turn + 1)) return 1;
+	if ((hod[1] + 1 < 8) && (hod[0] - 2 >= 0) && (cell[hod[1] + 1][hod[0] - 2] % 10 == 2) && (cell[hod[1] + 1][hod[0] - 2] / 10 != turn + 1)) return 1;
+	if ((hod[1] - 2 >= 0) && (hod[0] + 1 < 8) && (cell[hod[1] - 2][hod[0] + 1] % 10 == 2) && (cell[hod[1] - 2][hod[0] + 1] / 10 != turn + 1)) return 1;
+	if ((hod[1] - 1 >= 0) && (hod[0] + 2 < 8) && (cell[hod[1] - 1][hod[0] + 2] % 10 == 2) && (cell[hod[1] - 1][hod[0] + 2] / 10 != turn + 1)) return 1;
+	if ((hod[1] - 2 >= 0) && (hod[0] - 1 >= 0) && (cell[hod[1] - 2][hod[0] - 1] % 10 == 2) && (cell[hod[1] - 2][hod[0] - 1] / 10 != turn + 1)) return 1;
+	if ((hod[1] - 1 >= 0) && (hod[0] - 2 >= 0) && (cell[hod[1] - 1][hod[0] - 2] % 10 == 2) && (cell[hod[1] - 1][hod[0] - 2] / 10 != turn + 1)) return 1;
 
+	if (king == 1)
+	{
+		if ((hod[1] + 1 < 8) && (hod[0] + 1 < 8) && (cell[hod[1] + 1][hod[0] + 1] % 10 == 6) && (cell[hod[1] + 1][hod[0] + 1] / 10 != turn + 1)) return 1;//king
+		if ((hod[1] + 1 < 8) && (cell[hod[1] + 1][hod[0]] % 10 == 6) && (cell[hod[1] + 1][hod[0]] / 10 != turn + 1)) return 1;
+		if ((hod[1] + 1 < 8) && (hod[0] - 1 >= 0) && (cell[hod[1] + 1][hod[0] - 1] % 10 == 6) && (cell[hod[1] + 1][hod[0] - 1] / 10 != turn + 1)) return 1;
+		if ((hod[1] - 1 >= 0) && (cell[hod[1] - 1][hod[0]] % 10 == 6) && (cell[hod[1] - 1][hod[0]] / 10 != turn + 1)) return 1;
+		if ((hod[1] - 1 >= 0) && (hod[0] + 1 < 8) && (cell[hod[1] - 1][hod[0] + 1] % 10 == 6) && (cell[hod[1] - 1][hod[0] + 1] / 10 != turn + 1)) return 1;
+		if ((hod[0] + 1 < 8) && (cell[hod[1]][hod[0] + 1] % 10 == 6) && (cell[hod[1]][hod[0] + 1] / 10 != turn + 1)) return 1;
+		if ((hod[1] - 1 >= 0) && (hod[0] - 1 >= 0) && (cell[hod[1] - 1][hod[0] - 1] % 10 == 6) && (cell[hod[1] - 1][hod[0] - 1] / 10 != turn + 1)) return 1;
+		if ((hod[0] - 1 >= 0) && (cell[hod[1]][hod[0] - 1] % 10 == 6) && (cell[hod[1]][hod[0] - 1] / 10 != turn + 1)) return 1;
+	}
+
+	if (turn == 0)//peska
+	{
+		if ((hod[1] + 1 < 8) && (hod[0] + 1 < 8) && (cell[hod[1] + 1][hod[0] + 1] % 10 == 1) && (cell[hod[1] + 1][hod[0] + 1] / 10 == 2)) return 1;
+		if ((hod[1] + 1 < 8) && (hod[0] - 1 >= 0) && (cell[hod[1] + 1][hod[0] - 1] % 10 == 1) && (cell[hod[1] + 1][hod[0] - 1] / 10 == 2)) return 1;
+	}
+	else
+	{
+		if ((hod[1] - 1 >= 0) && (hod[0] + 1 < 8) && (cell[hod[1] - 1][hod[0] + 1] % 10 == 1) && (cell[hod[1] - 1][hod[0] + 1] / 10 == 1)) return 1;
+		if ((hod[1] - 1 >= 0) && (hod[0] - 1 >= 0) && (cell[hod[1] - 1][hod[0] - 1] % 10 == 1) && (cell[hod[1] - 1][hod[0] - 1] / 10 == 1)) return 1;
+	}
+	return 0;
+}
+
+bool chek_cell(unsigned short hod[2]/*, bool king/*учет удара короля*/, unsigned short& attacker_kind, unsigned short* attacker_pos)//vozvrashaet 0 v slychae esli cletca ne bietsa
+{
+	//unsigned short hod[2];
+	//translatePosition(s, hod);
+	for (int i = hod[1] + 1; i < 8; i++)//n
+	{
+		if ((cell[i][hod[0]] / 10) == (turn + 1))  break;
+		if ((cell[i][hod[0]] / 10) != 0)
+			if (((cell[i][hod[0]] % 10) == 4) || ((cell[i][hod[0]] % 10) == 5)) { attacker_kind = 4; attacker_pos[0] = hod[0]; attacker_pos[1] = i; return 1; }
+			else break;
+	}
+	for (int i = hod[1] - 1; i >= 0; i--)//s
+	{
+		if ((cell[i][hod[0]] / 10) == (turn + 1))  break;
+		if ((cell[i][hod[0]] / 10) != 0)
+			if (((cell[i][hod[0]] % 10) == 4) || ((cell[i][hod[0]] % 10) == 5)) { attacker_kind = 4; attacker_pos[0] = hod[0]; attacker_pos[1] = i; return 1; }
+			else break;
+	}
+	for (int i = hod[0] + 1; i < 8; i++)//e
+	{
+		if ((cell[hod[1]][i] / 10) == (turn + 1))  break;
+		if ((cell[hod[1]][i] / 10) != 0)
+			if (((cell[hod[1]][i] % 10) == 4) || ((cell[hod[1]][i] % 10) == 5)) { attacker_kind = 4; attacker_pos[0] = i; attacker_pos[1] = hod[1]; return 1; }
+			else break;
+	}
+	for (int i = hod[0] - 1; i >= 0; i--)//w
+	{
+		if ((cell[hod[1]][i] / 10) == (turn + 1))  break;
+		if ((cell[hod[1]][i] / 10) != 0)
+			if (((cell[hod[1]][i] % 10) == 4) || ((cell[hod[1]][i] % 10) == 5)) { attacker_kind = 4; attacker_pos[0] = i; attacker_pos[1] = hod[1]; return 1; }
+			else break;
+	}
+	for (int i = hod[1] + 1, j = hod[0] + 1; j < 8 && i < 8; j++, i++)//n-e
+	{
+		if ((cell[i][j] / 10) == (turn + 1))  break;
+		if ((cell[i][j] / 10) != 0)
+			if (((cell[i][j] % 10) == 3) || ((cell[i][j] % 10) == 5)) { attacker_kind = 3; attacker_pos[0] = j; attacker_pos[1] = i; return 1; }
+			else break;
+	}
+	for (int i = hod[1] - 1, j = hod[0] - 1; j >= 0 && i >= 0; j--, i--)//s-w
+	{
+		if ((cell[i][j] / 10) == (turn + 1))  break;
+		if ((cell[i][j] / 10) != 0)
+			if (((cell[i][j] % 10) == 3) || ((cell[i][j] % 10) == 5)) { attacker_kind = 3; attacker_pos[0] = j; attacker_pos[1] = i; return 1; }
+			else break;
+	}
+	for (int i = hod[1] - 1, j = hod[0] + 1; j < 8 && i >= 0; j++, i--)//s-e
+	{
+		if ((cell[i][j] / 10) == (turn + 1))  break;
+		if ((cell[i][j] / 10) != 0)
+			if (((cell[i][j] % 10) == 3) || ((cell[i][j] % 10) == 5)) { attacker_kind = 3; attacker_pos[0] = j; attacker_pos[1] = i; return 1; }
+			else break;
+	}
+	for (int i = hod[1] + 1, j = hod[0] - 1; j >= 0 && i < 8; j--, i++)//n-w
+	{
+		if ((cell[i][j] / 10) == (turn + 1))  break;
+		if ((cell[i][j] / 10) != 0)
+			if (((cell[i][j] % 10) == 3) || ((cell[i][j] % 10) == 5)) { attacker_kind = 3; attacker_pos[0] = j; attacker_pos[1] = i; return 1; }
+			else break;
+	}
+	if ((hod[1] + 2 < 8) && (hod[0] + 1 < 8) && (cell[hod[1] + 2][hod[0] + 1] % 10 == 2) && (cell[hod[1] + 2][hod[0] + 1] / 10 != turn + 1))//horse
+	{
+		attacker_kind = 2; attacker_pos[0] = hod[0] + 1; attacker_pos[1] = hod[1] + 2; return 1;
+	}
+	if ((hod[1] + 1 < 8) && (hod[0] + 2 < 8) && (cell[hod[1] + 1][hod[0] + 2] % 10 == 2) && (cell[hod[1] + 1][hod[0] + 2] / 10 != turn + 1))
+	{
+		attacker_kind = 2; attacker_pos[0] = hod[0] + 2; attacker_pos[1] = hod[1] + 1; return 1;
+	}
+	if ((hod[1] + 2 < 8) && (hod[0] - 1 >= 0) && (cell[hod[1] + 2][hod[0] - 1] % 10 == 2) && (cell[hod[1] + 2][hod[0] - 1] / 10 != turn + 1))
+	{
+		attacker_kind = 2; attacker_pos[0] = hod[0] - 1; attacker_pos[1] = hod[1] + 2; return 1;
+	}
+	if ((hod[1] + 1 < 8) && (hod[0] - 2 >= 0) && (cell[hod[1] + 1][hod[0] - 2] % 10 == 2) && (cell[hod[1] + 1][hod[0] - 2] / 10 != turn + 1))
+	{
+		attacker_kind = 2; attacker_pos[0] = hod[0] - 2; attacker_pos[1] = hod[1] + 1; return 1;
+	}
+	if ((hod[1] - 2 >= 0) && (hod[0] + 1 < 8) && (cell[hod[1] - 2][hod[0] + 1] % 10 == 2) && (cell[hod[1] - 2][hod[0] + 1] / 10 != turn + 1))
+	{
+		attacker_kind = 2; attacker_pos[0] = hod[0] + 1; attacker_pos[1] = hod[1] - 2; return 1;
+	}
+	if ((hod[1] - 1 >= 0) && (hod[0] + 2 < 8) && (cell[hod[1] - 1][hod[0] + 2] % 10 == 2) && (cell[hod[1] - 1][hod[0] + 2] / 10 != turn + 1))
+	{
+		attacker_kind = 2; attacker_pos[0] = hod[0] + 2; attacker_pos[1] = hod[1] - 1; return 1;
+	}
+	if ((hod[1] - 2 >= 0) && (hod[0] - 1 >= 0) && (cell[hod[1] - 2][hod[0] - 1] % 10 == 2) && (cell[hod[1] - 2][hod[0] - 1] / 10 != turn + 1))
+	{
+		attacker_kind = 2; attacker_pos[0] = hod[0] - 1; attacker_pos[1] = hod[1] - 2; return 1;
+	}
+	if ((hod[1] - 1 >= 0) && (hod[0] - 2 >= 0) && (cell[hod[1] - 1][hod[0] - 2] % 10 == 2) && (cell[hod[1] - 1][hod[0] - 2] / 10 != turn + 1))
+	{
+		attacker_kind = 2; attacker_pos[0] = hod[0] - 2; attacker_pos[1] = hod[1] - 1; return 1;
+	}
+
+	//if (king == 1)
+	//{
+	//	if ((hod[1] + 1 < 8) && (hod[0] + 1 < 8) && (cell[hod[1] + 1][hod[0] + 1] % 10 == 6) && (cell[hod[1] + 1][hod[0] + 1] / 10 != turn + 1)) return 1;//king
+	//	if ((hod[1] + 1 < 8) && (cell[hod[1] + 1][hod[0]] % 10 == 6) && (cell[hod[1] + 1][hod[0]] / 10 != turn + 1)) return 1;
+	//	if ((hod[1] + 1 < 8) && (hod[0] - 1 >= 0) && (cell[hod[1] + 1][hod[0] - 1] % 10 == 6) && (cell[hod[1] + 1][hod[0] - 1] / 10 != turn + 1)) return 1;
+	//	if ((hod[1] - 1 >= 0) && (cell[hod[1] - 1][hod[0]] % 10 == 6) && (cell[hod[1] - 1][hod[0]] / 10 != turn + 1)) return 1;
+	//	if ((hod[1] - 1 >= 0) && (hod[0] + 1 < 8) && (cell[hod[1] - 1][hod[0] + 1] % 10 == 6) && (cell[hod[1] - 1][hod[0] + 1] / 10 != turn + 1)) return 1;
+	//	if ((hod[0] + 1 < 8) && (cell[hod[1]][hod[0] + 1] % 10 == 6) && (cell[hod[1]][hod[0] + 1] / 10 != turn + 1)) return 1;
+	//	if ((hod[1] - 1 >= 0) && (hod[0] - 1 >= 0) && (cell[hod[1] - 1][hod[0] - 1] % 10 == 6) && (cell[hod[1] - 1][hod[0] - 1] / 10 != turn + 1)) return 1;
+	//	if ((hod[0] - 1 >= 0) && (cell[hod[1]][hod[0] - 1] % 10 == 6) && (cell[hod[1]][hod[0] - 1] / 10 != turn + 1)) return 1;
+	//}
+
+	if (turn == 0)//peska
+	{
+		if ((hod[1] + 1 < 8) && (hod[0] + 1 < 8) && (cell[hod[1] + 1][hod[0] + 1] % 10 == 1) && (cell[hod[1] + 1][hod[0] + 1] / 10 == 2))
+		{
+			attacker_kind = 1; attacker_pos[0] = hod[0] + 1; attacker_pos[1] = hod[1] + 1; return 1;
+		}
+		if ((hod[1] + 1 < 8) && (hod[0] - 1 >= 0) && (cell[hod[1] + 1][hod[0] - 1] % 10 == 1) && (cell[hod[1] + 1][hod[0] - 1] / 10 == 2))
+		{
+			attacker_kind = 1; attacker_pos[0] = hod[0] - 1; attacker_pos[1] = hod[1] + 1; return 1;
+		}
+	}
+	else
+	{
+		if ((hod[1] - 1 >= 0) && (hod[0] + 1 < 8) && (cell[hod[1] - 1][hod[0] + 1] % 10 == 1) && (cell[hod[1] - 1][hod[0] + 1] / 10 == 1))
+		{
+			attacker_kind = 1; attacker_pos[0] = hod[0] + 1; attacker_pos[1] = hod[1] - 1; return 1;
+		}
+		if ((hod[1] - 1 >= 0) && (hod[0] - 1 >= 0) && (cell[hod[1] - 1][hod[0] - 1] % 10 == 1) && (cell[hod[1] - 1][hod[0] - 1] / 10 == 1))
+		{
+			attacker_kind = 1; attacker_pos[0] = hod[0] - 1; attacker_pos[1] = hod[1] - 1; return 1;
+		}
+	}
+	return 0;
+}
+  
+  
 	bool white_or_black_background(unsigned short i, unsigned short j) // 1 - white background of figure, 0 - black background of figure
 	{
 		if (i % 2 == 0)
@@ -112,11 +349,6 @@ private:
 		DeleteObject(hBmp);
 	}
 
-	bool game_end()
-	{
-		return 1;
-	}
-
 	void translatePosition(string position, unsigned short* pos) // 99 - err
 	{
 		if (size(position) == 2 && (position.at(1) > '0' && position.at(1) <= '8') && ((position.at(0) >= 'A' && position.at(0) <= 'H') || (position.at(0) >= 'a' && position.at(0) <= 'h')))
@@ -157,35 +389,154 @@ private:
 		}
 	}
 
-	bool motionCheck(string position) // 1 - ход возможен, 0 - хода нет
+bool motionCheck(unsigned short i0[2]) // 1 - ход возможен, 0 - хода нет --- работа с cell_from
+{
+	int i = 0;
+	int j = 0;
+	int step_j = 2;
+	int step_i = 2;
+	/*unsigned short i0[2] = { 0 };
+	translatePosition(position, i0);*/
+	unsigned short color = cell[i0[1]][i0[0]] / 10;  // определение цвета игрока
+	i0[1] == 0 ? i = i0[1] : i = i0[1] - 1; // прописанные исключения; буквы - j, цифры - i
+	i0[0] == 0 ? j = i0[0] : j = i0[0] - 1;
+	i0[0] == 7 ? step_j = 1 : step_j = 2;
+	i0[1] == 7 ? step_i = 1 : step_i = 2;
+	for (; i < i0[1] + step_i; i++)
 	{
-		int i = 0;
-		int j = 0;
-		int step_j = 2;
-		int step_i = 2;
-		unsigned short i0[2] = { 0 };
-		translatePosition(position, i0);
-		unsigned short color = cell[i0[1]][i0[0]] / 10;  // определение цвета игрока
-		i0[1] == 0 ? i = i0[1] : i = i0[1] - 1; // прописанные исключения; буквы - j, цифры - i
-		i0[0] == 0 ? j = i0[0] : j = i0[0] - 1;
-		i0[0] == 7 ? step_j = 1 : step_j = 2;
-		i0[1] == 7 ? step_i = 1 : step_i = 2;
-		for (; i < i0[1] + step_i; i++)
+		for (; j < i0[0] + step_j; j++)
 		{
-			for (; j < i0[0] + step_j; j++)
+			if (cell[i][j] == 0) 
+			{ 
+				unsigned short t[2] = {j,i }; 
+				if (chek_cell(t, 1) == 0) return 1;
+			}
+			else if (cell[i][j] / 10 != color)
 			{
-				if (cell[i][j] == 0) return 1;
-				else if (cell[i][j] / 10 != color) // можно ли съесть
+				//cout << "-";
+				unsigned short mas[2] = { j,i };
+				if (!chek_cell(mas, 1)) return 1; //Вызывается проверка битой клетки, если клетка не бьется, то return 1;
+			}
+		}
+		if (i0[0] == 0 || i0[0] == 7) j -= 2;
+		else j -= 3;
+	}
+	return 0;
+}
+
+  
+   bool game_end()//не запускаеться при k/2 <= 2, при 1 - окончание игры
+{
+	unsigned short king[2];
+	turn = not(turn);
+	for (int i = 0, t = 0; i < 8 && t == 0; i++)//функция поиска позиции короля
+		for (int j = 0; j < 8 && t==0; j++)
+		{
+			if ((cell[i][j] / 10 == turn + 1) && (cell[i][j] % 10 == 6))
+			{
+				king[0] = j;
+				king[1] = i;
+				t = 1;
+			}
+		}
+	cout << king[0] << " " << king[1] << "\n";
+	unsigned short attacker_kind, attacker_pos[2];
+	if (chek_cell(king, attacker_kind, attacker_pos) == 1)//шах
+	{
+	
+		if (motionCheck(king) == 0)//хода нет
+		{
+		
+			if ((abs(attacker_pos[1] - king[1]) <= 1) && (abs(attacker_pos[0] - king[0]) <= 1) && (chek_cell(attacker_pos, 1) == 0))//king
+			{
+				turn = not(turn);
+				return 0;
+			}
+			if (attacker_kind <= 2)//pawn and horse
+			{
+				turn = not(turn);
+				if (chek_cell(attacker_pos, 0) == 1) { turn = not(turn); cell[attacker_pos[1]][attacker_pos[0]] = (turn + 1) * 10 + 2; }
+				else { victory(); return 1; }
+				
+				if (chek_cell(king, 0) == 1) { turn = not(turn); victory(); return 1; }
+				else
 				{
-					//if(!proverka_bit_kletki()) return 1; Вызывается проверка битой клетки, если клетка не бьется, то return 1;
+					turn = not(turn);
+					if (turn == 1) cell[attacker_pos[1]][attacker_pos[0]] = 20 + attacker_kind;
+					else  cell[attacker_pos[1]][attacker_pos[0]] = 10 + attacker_kind;
 				}
 			}
-			if (i0[0] == 0 || i0[0] == 7) j -= 2;
-			else j -= 3;
+			else//bishop, rook, queen
+			{
+				turn = not(turn);
+				unsigned short buff=99;
+				if (king[0] == attacker_pos[0])//n,s
+				{
+					if (king[1] < attacker_pos[1])//n
+					{
+						for (unsigned short pos[2] = { king[0],king[1] + 2 }; pos[1] <= attacker_pos[1]; pos[1]++)//n
+							if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]]; turn = not(turn); cell[pos[1]][pos[0]] = (turn+1) * 10 + 2; attacker_pos[1] = pos[1]; break; }
+					}
+					else//s
+						for (unsigned short pos[2] = { king[0],king[1] - 2 }; pos[1] >= attacker_pos[1]; pos[1]--)//s
+							if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn+1) * 10 + 2;  attacker_pos[1] = pos[1]; break; }
+				}
+				else if (king[1] == attacker_pos[1])//e,w
+				{
+					if (king[0] < attacker_pos[0])//e
+					{
+						for (unsigned short pos[2] = { king[0] + 2,king[1] }; pos[0] <= attacker_pos[0]; pos[0]++)//e
+							if (chek_cell(pos, 0) == 1) { cout << "*"; buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn + 1) * 10 + 2; attacker_pos[0] = pos[0]; break; }
+					}
+					else
+						for (unsigned short pos[2] = { king[0] - 2,king[1] }; pos[0] >= attacker_pos[0]; pos[0]--)//w
+							if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn+1) * 10 + 2; attacker_pos[0] = pos[0]; break; }
+				}
+				else
+				{
+					if ((king[0] < attacker_pos[0]) && (king[1] < attacker_pos[1]))
+						for (unsigned short pos[2] = { king[0] + 2,king[1] + 2 }; pos[0] <= attacker_pos[0] && pos[1] <= attacker_pos[1]; pos[0]++, pos[1]++)//n-e
+							if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn+1) * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
+					if ((king[0] > attacker_pos[0]) && (king[1] > attacker_pos[1]))
+						for (unsigned short pos[2] = { king[0] - 2,king[1] - 2 }; pos[0] >= attacker_pos[0] && pos[1] >= attacker_pos[1]; pos[0]--, pos[1]--)//s-w
+							if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]]; turn = not(turn); cell[pos[1]][pos[0]] = (turn+1) * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
+					if ((king[0] < attacker_pos[0]) && (king[1] > attacker_pos[1]))
+						for (unsigned short pos[2] = { king[0] + 2,king[1] - 2 }; pos[0] <= attacker_pos[0] && pos[1] >= attacker_pos[1]; pos[0]++, pos[1]--)//s-e
+							if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn+1) * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
+					if ((king[0] > attacker_pos[0]) && (king[1] < attacker_pos[1]))
+						for (unsigned short pos[2] = { king[0] - 2,king[1] + 2 }; pos[0] >= attacker_pos[0] && pos[1] <= attacker_pos[1]; pos[0]--, pos[1]++)//n-w
+							if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn+1) * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
+				}
+
+
+				if (buff == 99) turn = not(turn);
+				if (chek_cell(king, 0) == 1) { turn = not(turn); victory(); return 1; }
+				else { cell[attacker_pos[1]][attacker_pos[0]] = buff; return 0; }
+			}
+			return 0;
 		}
+		else {turn = not(turn); return 0;}
+	}
+	else if (k / 2 > 30)
+	{
+		if (motionCheck(king) == 0)
+		{
+			for(int i=0; i<8; i++)
+				for (int j=0; j < 8; j++)
+				{
+					if ((cell[i][j] / 10 == turn + 1) && (cell[i][j] % 10 != 1) && (cell[i][j] % 10 != 6)) { turn = not(turn); return 0; }//по статистике смотрим только пешки
+					else if ((cell[i][j] / 10 == turn + 1) && (cell[i][j] % 10 == 1)) /*функция возможности маневра пешкой - возможно*/ { turn = not(turn); return 0; }
+				}
+			cout << "Drrrraw!!!\n";
+			return 1;
+		}
+		turn = not(turn);
 		return 0;
 	}
+	else { turn = not(turn); return 0; }
+}
 
+  
 public:
 	Chess()
 	{
@@ -193,6 +544,37 @@ public:
 		cell_to = 0;
 		for (int i = 0; i < 8; ++i) for (int j = 0; j < 8; ++j) cell[i][j] = 0;
 	}
+  
+  
+bool last_check(const unsigned short* mas)//1 esli king pod ydarom
+{
+	unsigned short buff = cell[mas[1] / 10][mas[1] % 10];
+	cell[mas[1] / 10][mas[1] % 10] = cell[mas[0] / 10][mas[0] % 10];
+	cell[mas[0] / 10][mas[0] % 10] = 0;
+
+	unsigned short king[2];
+	for (int i = 0, t = 0; i < 8 && t == 0; i++)//функция поиска позиции короля
+		for (int j = 0; j < 8 && t == 0; j++)
+		{
+			if ((cell[i][j] / 10 == turn + 1) && (cell[i][j] % 10 == 6))
+			{
+				king[0] = j;
+				king[1] = i;
+				t = 1;
+			}
+		}
+
+	if (chek_cell(king, 0) == 1)
+	{
+		cell[mas[0] / 10][mas[0] % 10] = cell[mas[1] / 10][mas[1] % 10];
+		cell[mas[1] / 10][mas[1] % 10] = buff;
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
 
 	void start_cell()
 	{
@@ -208,10 +590,10 @@ public:
 		show();
 	}
 
+
 	bool game_turn()
 	{
-		cell[cell_to / 10][cell_to % 10] = cell[cell_from / 10][cell_from % 10];
-		cell[cell_from / 10][cell_from % 10] = 0;
+	
 		system("cls");
 		show();
 		if (k/2 < 2 && !game_end()) return 0;
@@ -360,7 +742,24 @@ class Rook : public Chess::Figure
 public: 
 	bool check_figure(Chess& chess) override
 	{
-		return 1;
+    unsigned short* mas = chess.get_cell();
+			if (mas[0] % 10 == mas[1] % 10)//n,s
+	{
+		unsigned short word = mas[0] % 10;
+		/*if (mas[0] / 10 == mas[1] / 10) return 0;
+		else*/ if (mas[0] / 10 < mas[1] / 10) for (int i = mas[0] / 10 + 1; i < mas[1] / 10; i++) if (cell[i][word] / 10 != 0) return 0;
+		else for (int i = mas[0] / 10 - 1; i > mas[1] / 10; i--) if (cell[i][word] / 10 != 0) return 0;
+	}
+	else if (mas[0] / 10 == mas[1] / 10)//e,w
+	{
+		unsigned short number = mas[0] / 10;
+		/*if (mas[0] % 10 == mas[1] % 10) return 0;
+		else*/ if (mas[0] % 10 < mas[1] % 10) for (int i = mas[0] % 10 + 1; i < mas[1] % 10; i++) if (cell[number][i] / 10 != 0) return 0;
+		else for (int i = mas[0] % 10 - 1; i > mas[1] % 10; i--) if (cell[number][i] / 10 != 0) return 0;
+	}
+	else return 0;
+	if (last_check(mas) == 1) return 0;
+	return 1;
 	}
 };
 
@@ -369,7 +768,39 @@ class Queen : public Chess::Figure
 public: 
 	bool check_figure(Chess& chess) override
 	{
-		return 1;
+    unsigned short* mas = chess.get_cell();
+		if (mas[0] % 10 == mas[1] % 10)//n,s
+	{
+		unsigned short word = mas[0] % 10;
+		if (mas[0] / 10 == mas[1] / 10) return 0;
+		else if (mas[0] / 10 < mas[1] / 10) for (int i = mas[0] / 10 + 1; i < mas[1] / 10; i++) if (cell[i][word] / 10 != 0) return 0;
+		else for (int i = mas[0] / 10 - 1; i > mas[1] / 10; i--) if (cell[i][word] / 10 != 0) return 0;
+	}
+	else if (mas[0] / 10 == mas[1] / 10)//e,w
+	{
+		unsigned short number = mas[0] / 10;
+		if (mas[0] % 10 < mas[1] % 10) for (int i = mas[0] % 10 + 1; i < mas[1] % 10; i++) if (cell[number][i] / 10 != 0) return 0;
+		else for (int i = mas[0] % 10 - 1; i > mas[1] % 10; i--) if (cell[number][i] / 10 != 0) return 0;
+	}
+	else if (abs(mas[0] % 10 - mas[1] % 10) == abs(mas[0] / 10 - mas[1] / 10))//raznosti kletok po bykvam i chislam
+	{
+		unsigned short pos_to[2] = { mas[1] / 10, mas[1] % 10 };//pos_to[0]-chifra  pos_to[1]-bykva
+		if ((mas[0] / 10 < pos_to[0]) && (mas[0] % 10 < pos_to[1]))
+			for (unsigned short pos[2] = { mas[0] / 10 + 1,mas[0] % 10 + 1 }; pos[0] < pos_to[0] && pos[1] < pos_to[1]; pos[0]++, pos[1]++)//n-e
+				if (cell[pos[0]][pos[1]] / 10 != 0) return 0;
+		if ((mas[0] / 10 > pos_to[0]) && (mas[0] % 10 > pos_to[1]))
+			for (unsigned short pos[2] = { mas[0] / 10 - 1,mas[0] % 10 - 1 }; pos[0] > pos_to[0] && pos[1] > pos_to[1]; pos[0]--, pos[1]--)//s-w
+				if (cell[pos[0]][pos[1]] / 10 != 0) return 0;
+		if ((mas[0] % 10 < pos_to[1]) && (mas[0] / 10 > pos_to[0]))
+			for (unsigned short pos[2] = { mas[0] / 10 - 1,mas[0] % 10 + 1 }; pos[0] > pos_to[0] && pos[1] < pos_to[1]; pos[0]--, pos[1]++)//s-e
+				if (cell[pos[0]][pos[1]] / 10 != 0) return 0;
+		if ((mas[0] % 10 > pos_to[1]) && (mas[0] / 10 < pos_to[0]))
+			for (unsigned short pos[2] = { mas[0] / 10 + 1,mas[0] % 10 - 1 }; pos[0] < pos_to[0] && pos[1] > pos_to[1]; pos[0]++, pos[1]--)//n-w
+				if (cell[pos[0]][pos[1]] / 10 != 0) return 0;
+	}
+	else return 0;
+	if (last_check(mas) == 1) return 0;
+	return 1;
 	}
 };
 
@@ -396,8 +827,62 @@ public:
 class Menu {
 private:
 	int user_choise = 0;
+  
+   void gen_color()
+  {
+	  srand(time(0));
+	  if (rand() % 2 == 1) swap(white, black);
+  }
 
-	void menu_window() {
+
+void choose_player()
+{
+	string choose, choose_c1, choose_c2;
+	cout << "-------Welcome chess fans!-------\n";
+	cout << "What is your name, Player 1 ?\n";
+	cin >> white;
+	cout << "And your, Player 2 ?\n";
+	cin >> black;
+	while (true)
+	{
+		system("cls");
+		cout << "Do you want to choose a color?(Yes/No)\n";
+		cin >> choose;
+		if ((choose[0] == 'y') || (choose[0] == 'Y'))
+		{
+			cout << "What color does " << white << " choose?(White/Black)\n";
+			cin >> choose_c1;
+			if ((choose_c1[0] == 'B') || (choose_c1[0] == 'b')) swap(white, black);
+			else if ((choose_c1[0] != 'w') && (choose_c1[0] != 'W'))
+			{
+				cout << "And what does " << black << " think?(White/Black)\n";
+				cin >> choose_c2;
+				if ((choose_c2[0] == 'w') || (choose_c2[0] == 'W')) swap(white, black);
+				else if ((choose_c2[0] != 'B') && (choose_c2[0] != 'b'))
+				{
+					cout << "Ok, I get it\n";
+					gen_color();
+				}
+			}
+			break;
+		}
+		else if ((choose[0] == 'N') || (choose[0] == 'n'))
+		{
+			gen_color();
+			break;
+		}
+		else
+		{
+			cout << "Error";
+			Sleep(500);
+		}
+	}
+	cout << white << " playes with white pieces\n";
+	cout << black << " playes with black pieces\n";
+	getchar(); getchar(); system("cls");
+}
+  
+  	void menu_window() {
 		system("cls");
 		std::cout << "\tHello, stranger." << std::endl;
 		std::cout << "1. New game" << std::endl;
@@ -405,7 +890,8 @@ private:
 		std::cout << "3. Exit" << std::endl;
 		std::cout << "Your choise: ";
 	}
-
+  
+  
 public:
 	void New_game() 
 	{
@@ -417,6 +903,7 @@ public:
 		k = 0;
 		bool check = 0;
 		chess.start_cell();
+    choose_player();
 		do {
 			if (flag) cout << "Err. Try again\n";
 			if (chess.check() == 9) flag = 1;
@@ -482,10 +969,13 @@ public:
 };
 
 
+
+
+
+
 int main()
 {
-	Menu game_menu;
-
+Menu game_menu;
 	switch (game_menu.set_choise()) {
 	case 1:
 		game_menu.New_game();
@@ -502,3 +992,4 @@ int main()
 		game_menu.Err_choise();
 		main();
 	}
+}

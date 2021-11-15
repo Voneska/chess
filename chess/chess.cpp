@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <Windows.h>
 #include <string>
 #include "pictures_of_figures.h"
@@ -502,8 +502,3 @@ int main()
 		game_menu.Err_choise();
 		main();
 	}
-
-
-	return 0;
-}
-

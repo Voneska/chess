@@ -3,7 +3,7 @@
 #include<Windows.h>
 using namespace std;
 string white, black;
-unsigned short cell[8][8]; 
+unsigned short cell[8][8] = { 0 };
 unsigned short cell_from, cell_to;//возможно, массивы
 int k = 0;//счетчик полуходов
 bool turn = 0;//xod belix
@@ -48,7 +48,7 @@ void victory()
 	else if (turn == 1) cout << "Checkmate to the white King\n" << black << " wooooooon!!!\n";
 }
 
-bool chek_cell(unsigned short hod[2], bool king/*учет удара короля*/)//vozvrashaet 0 v slychae esli cletca ne bietsa
+bool chek_cell(unsigned short hod[2]/*клетка потенциального удара*/, bool king/*учет удара короля*/)//vozvrashaet 0 v slychae esli cletca ne bietsa
 {
 	//unsigned short hod[2];
 	//translatePosition(s, hod);
@@ -84,28 +84,28 @@ bool chek_cell(unsigned short hod[2], bool king/*учет удара корол�
 	{
 		if ((cell[i][j] / 10) == (turn + 1))  break;
 		if ((cell[i][j] / 10) != 0)
-			if (((cell[i][j] % 10) == 3) || ((cell[hod[i]][j] % 10) == 5)) return 1;
+			if (((cell[i][j] % 10) == 3) || ((cell[i][j] % 10) == 5)) return 1;
 			else break;
 	}
 	for (int i = hod[1] - 1, j = hod[0] - 1; j >= 0 && i >= 0; j--, i--)//s-w
 	{
 		if ((cell[i][j] / 10) == (turn + 1))  break;
 		if ((cell[i][j] / 10) != 0)
-			if (((cell[i][j] % 10) == 3) || ((cell[hod[i]][j] % 10) == 5)) return 1;
+			if (((cell[i][j] % 10) == 3) || ((cell[i][j] % 10) == 5)) return 1;
 			else break;
 	}
 	for (int i = hod[1] - 1, j = hod[0] + 1; j < 8 && i >= 0; j++, i--)//s-e
 	{
 		if ((cell[i][j] / 10) == (turn + 1))  break;
 		if ((cell[i][j] / 10) != 0)
-			if (((cell[i][j] % 10) == 3) || ((cell[hod[i]][j] % 10) == 5)) return 1;
+			if (((cell[i][j] % 10) == 3) || ((cell[i][j] % 10) == 5)) return 1;
 			else break;
 	}
 	for (int i = hod[1] + 1, j = hod[0] - 1; j >= 0 && i < 8; j--, i++)//n-w
 	{
 		if ((cell[i][j] / 10) == (turn + 1))  break;
 		if ((cell[i][j] / 10) != 0)
-			if (((cell[i][j] % 10) == 3) || ((cell[hod[i]][j] % 10) == 5)) return 1;
+			if (((cell[i][j] % 10) == 3) || ((cell[i][j] % 10) == 5)) return 1;
 			else break;
 	}
 	if ((hod[1] + 2 < 8) && (hod[0] + 1 < 8) && (cell[hod[1] + 2][hod[0] + 1] % 10 == 2) && (cell[hod[1] + 2][hod[0] + 1] / 10 != turn + 1)) return 1;//horse
@@ -289,12 +289,16 @@ bool motionCheck(unsigned short i0[2]) // 1 - ход возможен, 0 - хо�
 	{
 		for (; j < i0[0] + step_j; j++)
 		{
-			if (cell[i][j] == 0) return 1;
-			else if (cell[i][j] % 10 != color)
+			if (cell[i][j] == 0) 
+			{ 
+				unsigned short t[2] = {j,i }; 
+				if (chek_cell(t, 1) == 0) return 1;
+			}
+			else if (cell[i][j] / 10 != color)
 			{
-				cout << "-";
-				unsigned short mas[2] = { i, j };//?
-				if (!/*?*/chek_cell(mas, 1)) return 1; //Вызывается проверка битой клетки, если клетка не бьется, то return 1;
+				//cout << "-";
+				unsigned short mas[2] = { j,i };
+				if (!chek_cell(mas, 1)) return 1; //Вызывается проверка битой клетки, если клетка не бьется, то return 1;
 			}
 		}
 		if (i0[0] == 0 || i0[0] == 7) j -= 2;
@@ -321,10 +325,10 @@ bool game_end()//не запускаеться при k/2 <= 2, при 1 - ок�
 	unsigned short attacker_kind, attacker_pos[2];
 	if (chek_cell(king, attacker_kind, attacker_pos) == 1)//шах
 	{
-		cout << "*";
+	
 		if (motionCheck(king) == 0)//хода нет
 		{
-			cout << "*";
+		
 			if ((abs(attacker_pos[1] - king[1]) <= 1) && (abs(attacker_pos[0] - king[0]) <= 1) && (chek_cell(attacker_pos, 1) == 0))//king
 			{
 				turn = not(turn);
@@ -335,58 +339,61 @@ bool game_end()//не запускаеться при k/2 <= 2, при 1 - ок�
 				turn = not(turn);
 				if (chek_cell(attacker_pos, 0) == 1) { turn = not(turn); cell[attacker_pos[1]][attacker_pos[0]] = (turn + 1) * 10 + 2; }
 				else { victory(); return 1; }
-				turn = not(turn);
-				if (chek_cell(king, 0) == 1) { victory(); return 1; }
+				
+				if (chek_cell(king, 0) == 1) { turn = not(turn); victory(); return 1; }
 				else
 				{
+					turn = not(turn);
 					if (turn == 1) cell[attacker_pos[1]][attacker_pos[0]] = 20 + attacker_kind;
 					else  cell[attacker_pos[1]][attacker_pos[0]] = 10 + attacker_kind;
 				}
 			}
 			else//bishop, rook, queen
 			{
-				unsigned short buff;
-				if (king[0] == attacker_pos[0])
+				turn = not(turn);
+				unsigned short buff=99;
+				if (king[0] == attacker_pos[0])//n,s
 				{
-					if (king[1] < attacker_pos[1])
+					if (king[1] < attacker_pos[1])//n
 					{
 						for (unsigned short pos[2] = { king[0],king[1] + 2 }; pos[1] <= attacker_pos[1]; pos[1]++)//n
-							if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]]; cell[pos[1]][pos[0]] = turn * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
+							if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]]; turn = not(turn); cell[pos[1]][pos[0]] = (turn+1) * 10 + 2; attacker_pos[1] = pos[1]; break; }
 					}
-					else
+					else//s
 						for (unsigned short pos[2] = { king[0],king[1] - 2 }; pos[1] >= attacker_pos[1]; pos[1]--)//s
-							if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]]; cell[pos[1]][pos[0]] = turn * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
+							if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn+1) * 10 + 2;  attacker_pos[1] = pos[1]; break; }
 				}
-				else if (king[1] == attacker_pos[1])
+				else if (king[1] == attacker_pos[1])//e,w
 				{
-					if (king[0] < attacker_pos[0])
+					if (king[0] < attacker_pos[0])//e
 					{
 						for (unsigned short pos[2] = { king[0] + 2,king[1] }; pos[0] <= attacker_pos[0]; pos[0]++)//e
-							if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]]; cell[pos[1]][pos[0]] = turn * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
+							if (chek_cell(pos, 0) == 1) { cout << "*"; buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn + 1) * 10 + 2; attacker_pos[0] = pos[0]; break; }
 					}
 					else
 						for (unsigned short pos[2] = { king[0] - 2,king[1] }; pos[0] >= attacker_pos[0]; pos[0]--)//w
-							if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]]; cell[pos[1]][pos[0]] = turn * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
+							if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn+1) * 10 + 2; attacker_pos[0] = pos[0]; break; }
 				}
 				else
 				{
 					if ((king[0] < attacker_pos[0]) && (king[1] < attacker_pos[1]))
 						for (unsigned short pos[2] = { king[0] + 2,king[1] + 2 }; pos[0] <= attacker_pos[0] && pos[1] <= attacker_pos[1]; pos[0]++, pos[1]++)//n-e
-							if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]]; cell[pos[1]][pos[0]] = turn * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
+							if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn+1) * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
 					if ((king[0] > attacker_pos[0]) && (king[1] > attacker_pos[1]))
 						for (unsigned short pos[2] = { king[0] - 2,king[1] - 2 }; pos[0] >= attacker_pos[0] && pos[1] >= attacker_pos[1]; pos[0]--, pos[1]--)//s-w
-							if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]]; cell[pos[1]][pos[0]] = turn * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
+							if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]]; turn = not(turn); cell[pos[1]][pos[0]] = (turn+1) * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
 					if ((king[0] < attacker_pos[0]) && (king[1] > attacker_pos[1]))
 						for (unsigned short pos[2] = { king[0] + 2,king[1] - 2 }; pos[0] <= attacker_pos[0] && pos[1] >= attacker_pos[1]; pos[0]++, pos[1]--)//s-e
-							if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]]; cell[pos[1]][pos[0]] = turn * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
+							if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn+1) * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
 					if ((king[0] > attacker_pos[0]) && (king[1] < attacker_pos[1]))
 						for (unsigned short pos[2] = { king[0] - 2,king[1] + 2 }; pos[0] >= attacker_pos[0] && pos[1] <= attacker_pos[1]; pos[0]--, pos[1]++)//n-w
-							if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]]; cell[pos[1]][pos[0]] = turn * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
+							if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn+1) * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
 				}
+
+				if (buff == 99) turn = not(turn);
 				if (chek_cell(king, 0) == 1) { turn = not(turn); victory(); return 1; }
 				else { cell[attacker_pos[1]][attacker_pos[0]] = buff; return 0; }
 			}
-			turn = not(turn);
 			return 0;
 		}
 		else {turn = not(turn); return 0;}
@@ -479,6 +486,92 @@ void start_cell()
 }
 
 
+bool last_check(const unsigned short* mas)//1 esli king pod ydarom
+{
+	unsigned short buff = cell[mas[1] / 10][mas[1] % 10];
+	cell[mas[1] / 10][mas[1] % 10] = cell[mas[0] / 10][mas[0] % 10];
+	cell[mas[0] / 10][mas[0] % 10] = 0;
+
+	unsigned short king[2];
+	for (int i = 0, t = 0; i < 8 && t == 0; i++)//функция поиска позиции короля
+		for (int j = 0; j < 8 && t == 0; j++)
+		{
+			if ((cell[i][j] / 10 == turn + 1) && (cell[i][j] % 10 == 6))
+			{
+				king[0] = j;
+				king[1] = i;
+				t = 1;
+			}
+		}
+
+	if (chek_cell(king, 0) == 1)
+	{
+		cell[mas[0] / 10][mas[0] % 10] = cell[mas[1] / 10][mas[1] % 10];
+		cell[mas[1] / 10][mas[1] % 10] = buff;
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+
+bool check_rook(const unsigned short mas[])//1 - hod vozmozen
+{
+	if (mas[0] % 10 == mas[1] % 10)//n,s
+	{
+		unsigned short word = mas[0] % 10;
+		/*if (mas[0] / 10 == mas[1] / 10) return 0;
+		else*/ if (mas[0] / 10 < mas[1] / 10) for (int i = mas[0] / 10 + 1; i < mas[1] / 10; i++) if (cell[i][word] / 10 != 0) return 0;
+		else for (int i = mas[0] / 10 - 1; i > mas[1] / 10; i--) if (cell[i][word] / 10 != 0) return 0;
+	}
+	else if (mas[0] / 10 == mas[1] / 10)//e,w
+	{
+		unsigned short number = mas[0] / 10;
+		/*if (mas[0] % 10 == mas[1] % 10) return 0;
+		else*/ if (mas[0] % 10 < mas[1] % 10) for (int i = mas[0] % 10 + 1; i < mas[1] % 10; i++) if (cell[number][i] / 10 != 0) return 0;
+		else for (int i = mas[0] % 10 - 1; i > mas[1] % 10; i--) if (cell[number][i] / 10 != 0) return 0;
+	}
+	else return 0;
+	if (last_check(mas) == 1) return 0;
+	return 1;
+}
+bool check_queen(const unsigned short mas[])//1 - hod vozmozen
+{
+	if (mas[0] % 10 == mas[1] % 10)//n,s
+	{
+		unsigned short word = mas[0] % 10;
+		if (mas[0] / 10 == mas[1] / 10) return 0;
+		else if (mas[0] / 10 < mas[1] / 10) for (int i = mas[0] / 10 + 1; i < mas[1] / 10; i++) if (cell[i][word] / 10 != 0) return 0;
+		else for (int i = mas[0] / 10 - 1; i > mas[1] / 10; i--) if (cell[i][word] / 10 != 0) return 0;
+	}
+	else if (mas[0] / 10 == mas[1] / 10)//e,w
+	{
+		unsigned short number = mas[0] / 10;
+		if (mas[0] % 10 < mas[1] % 10) for (int i = mas[0] % 10 + 1; i < mas[1] % 10; i++) if (cell[number][i] / 10 != 0) return 0;
+		else for (int i = mas[0] % 10 - 1; i > mas[1] % 10; i--) if (cell[number][i] / 10 != 0) return 0;
+	}
+	else if (abs(mas[0] % 10 - mas[1] % 10) == abs(mas[0] / 10 - mas[1] / 10))//raznosti kletok po bykvam i chislam
+	{
+		unsigned short pos_to[2] = { mas[1] / 10, mas[1] % 10 };//pos_to[0]-chifra  pos_to[1]-bykva
+		if ((mas[0] / 10 < pos_to[0]) && (mas[0] % 10 < pos_to[1]))
+			for (unsigned short pos[2] = { mas[0] / 10 + 1,mas[0] % 10 + 1 }; pos[0] < pos_to[0] && pos[1] < pos_to[1]; pos[0]++, pos[1]++)//n-e
+				if (cell[pos[0]][pos[1]] / 10 != 0) return 0;
+		if ((mas[0] / 10 > pos_to[0]) && (mas[0] % 10 > pos_to[1]))
+			for (unsigned short pos[2] = { mas[0] / 10 - 1,mas[0] % 10 - 1 }; pos[0] > pos_to[0] && pos[1] > pos_to[1]; pos[0]--, pos[1]--)//s-w
+				if (cell[pos[0]][pos[1]] / 10 != 0) return 0;
+		if ((mas[0] % 10 < pos_to[1]) && (mas[0] / 10 > pos_to[0]))
+			for (unsigned short pos[2] = { mas[0] / 10 - 1,mas[0] % 10 + 1 }; pos[0] > pos_to[0] && pos[1] < pos_to[1]; pos[0]--, pos[1]++)//s-e
+				if (cell[pos[0]][pos[1]] / 10 != 0) return 0;
+		if ((mas[0] % 10 > pos_to[1]) && (mas[0] / 10 < pos_to[0]))
+			for (unsigned short pos[2] = { mas[0] / 10 + 1,mas[0] % 10 - 1 }; pos[0] < pos_to[0] && pos[1] > pos_to[1]; pos[0]++, pos[1]--)//n-w
+				if (cell[pos[0]][pos[1]] / 10 != 0) return 0;
+	}
+	else return 0;
+	if (last_check(mas) == 1) return 0;
+	return 1;
+}
 
 
 
@@ -489,7 +582,7 @@ int main()
 	//cout << game_end()<<"\n";
 	k = 18;
 	turn = 0;
-	cell[7][0] = 26; cell[6][0] = 21;
+	cell[7][0] = 26; cell[6][0] = 11;
 	cell[6][1] = 21; cell[7][2] = 15;
 	cout << game_end() <<"  "<< turn<< "\n";
 	return 0;

@@ -546,10 +546,9 @@ public:
   
 bool last_check()//1 esli king pod ydarom
 {
-	unsigned short* mas = get_cell();
-	unsigned short buff = cell[mas[1] / 10][mas[1] % 10];
-	cell[mas[1] / 10][mas[1] % 10] = cell[mas[0] / 10][mas[0] % 10];
-	cell[mas[0] / 10][mas[0] % 10] = 0;
+	unsigned short buff = cell[cell_to / 10][cell_to % 10];
+	cell[cell_to / 10][cell_to % 10] = cell[cell_from / 10][cell_from % 10];
+	cell[cell_from / 10][cell_from % 10] = 0;
 
 	unsigned short king[2];
 	for (int i = 0, t = 0; i < 8 && t == 0; i++)//функция поиска позиции короля
@@ -565,8 +564,8 @@ bool last_check()//1 esli king pod ydarom
 
 	if (chek_cell(king, 0) == 1)
 	{
-		cell[mas[0] / 10][mas[0] % 10] = cell[mas[1] / 10][mas[1] % 10];
-		cell[mas[1] / 10][mas[1] % 10] = buff;
+		cell[cell_from / 10][cell_from % 10] = cell[cell_to / 10][cell_to % 10];
+		cell[cell_to / 10][cell_to % 10] = buff;
 		return 1;
 	}
 	else
@@ -722,7 +721,7 @@ public:
 				case 4:j -= 11;
 					break;
 				}
-				if (chess.condition_cell(j) != 0)
+				if (j != mas[1] && chess.condition_cell(j) != 0)
 				{
 					return 0;
 				}
@@ -922,7 +921,7 @@ public:
 				if (check == 0)	flag = 1;
 				else {
 					if (chess.last_check()) flag = 1;
-					 flag = 0;
+					else flag = 0;
 				}
 			}
 		} while (flag || chess.game_turn());

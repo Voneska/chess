@@ -576,18 +576,16 @@ public:
 	}
 }
 
-	void start_cell() /*cell[0][1] = 12;  cell[7][1] = 22;*/
+	void start_cell()
 	{
-		cell[0][0] = 14; cell[0][1] = 0; cell[0][2] = 13; cell[0][3] = 15;
+		cell[0][0] = 14; cell[0][1] = 12; cell[0][2] = 13; cell[0][3] = 15;
 		cell[0][4] = 16; cell[0][5] = 13; cell[0][6] = 12; cell[0][7] = 14;
 		for (int i = 0; i < 8; i++)
 		{
 			cell[1][i] = 11;
 			cell[6][i] = 21;
 		}
-		cell[1][1] = 21; // **
-		cell[6][1] = 11; // **
-		cell[7][0] = 24; cell[7][1] = 0; cell[7][2] = 23; cell[7][3] = 25;
+		cell[7][0] = 24; cell[7][1] = 22; cell[7][2] = 23; cell[7][3] = 25;
 		cell[7][4] = 26; cell[7][5] = 23; cell[7][6] = 22; cell[7][7] = 24;
 		show();
 	}

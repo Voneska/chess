@@ -544,7 +544,7 @@ public:
 	}
   
   
-bool last_check()//1 esli king pod ydarom
+	bool last_check(bool pawn)//return 1 esli king pod ydarom; if pawn == 1 do not apply changes
 {
 	unsigned short buff = cell[cell_to / 10][cell_to % 10];
 	cell[cell_to / 10][cell_to % 10] = cell[cell_from / 10][cell_from % 10];
@@ -564,8 +564,10 @@ bool last_check()//1 esli king pod ydarom
 
 	if (chek_cell(king, 0) == 1)
 	{
-		cell[cell_from / 10][cell_from % 10] = cell[cell_to / 10][cell_to % 10];
-		cell[cell_to / 10][cell_to % 10] = buff;
+		if (!pawn) {
+			cell[cell_from / 10][cell_from % 10] = cell[cell_to / 10][cell_to % 10];
+			cell[cell_to / 10][cell_to % 10] = buff;
+		}
 		return 1;
 	}
 	else
@@ -574,16 +576,18 @@ bool last_check()//1 esli king pod ydarom
 	}
 }
 
-	void start_cell()
+	void start_cell() /*cell[0][1] = 12;  cell[7][1] = 22;*/
 	{
-		cell[0][0] = 14; cell[0][1] = 12; cell[0][2] = 13; cell[0][3] = 15;
+		cell[0][0] = 14; cell[0][1] = 0; cell[0][2] = 13; cell[0][3] = 15;
 		cell[0][4] = 16; cell[0][5] = 13; cell[0][6] = 12; cell[0][7] = 14;
 		for (int i = 0; i < 8; i++)
 		{
 			cell[1][i] = 11;
 			cell[6][i] = 21;
 		}
-		cell[7][0] = 24; cell[7][1] = 22; cell[7][2] = 23; cell[7][3] = 25;
+		cell[1][1] = 21; // **
+		cell[6][1] = 11; // **
+		cell[7][0] = 24; cell[7][1] = 0; cell[7][2] = 23; cell[7][3] = 25;
 		cell[7][4] = 26; cell[7][5] = 23; cell[7][6] = 22; cell[7][7] = 24;
 		show();
 	}
@@ -636,6 +640,8 @@ bool last_check()//1 esli king pod ydarom
 		unsigned short mas[2] = { cell_from, cell_to };
 		return (mas);
 	}
+
+	void set_cell_from(unsigned short condition) { cell[cell_from/10][cell_from%10] = condition; }
 	
 	class Figure
 	{
@@ -652,6 +658,22 @@ bool last_check()//1 esli king pod ydarom
 
 class Pawn : public Chess::Figure
 {
+private:
+	bool transform(Chess& chess)
+	{
+		if (!chess.last_check(1)) {
+			cin.get();
+			unsigned short choice = 5;
+			cout << "\nChoice figure to transform the pawn:\n1 - Horse; \t2 - Bishop;\n3 - Rook;\t4 - Queen;\nYour choice: ";
+			while (choice > 4 || choice < 1)
+			{
+				cin >> choice;
+			}
+			chess.set_cell_from((turn + 1) * 10 + choice + 1);
+			return 1;
+		}
+		else return 0;
+	}
 public:	
 	bool check_figure(Chess& chess) override// 0 - err, 1 - all is good
 	{
@@ -659,14 +681,38 @@ public:
 		unsigned short condition_cell_to = chess.condition_cell(mas[1]);
 		if (turn == 0)
 		{
-			if (((mas[1] / 10 - mas[0] / 10) == 1) && (mas[1] % 10 == mas[0] % 10) && (condition_cell_to == 0)) return 1;
+			if (mas[1] / 10 == 7 &&((mas[1] / 10 - mas[0] / 10) == 1) && (mas[1] % 10 == mas[0] % 10) && (condition_cell_to == 0))
+			{
+				if (transform(chess)) return 1;
+			}
+			else if (mas[1] / 10 == 7 && ((mas[1] / 10 - mas[0] / 10) == 1) && ((mas[1] % 10 - mas[0] % 10) == 1) && (condition_cell_to != 0))
+			{
+				if (transform(chess)) return 1;
+			}
+			else if (mas[1] / 10 == 7 && ((mas[1] / 10 - mas[0] / 10) == 1) && ((mas[0] % 10 - mas[1] % 10) == 1) && (condition_cell_to != 0))
+			{
+				if (transform(chess)) return 1;
+			}
+			else if (((mas[1] / 10 - mas[0] / 10) == 1) && (mas[1] % 10 == mas[0] % 10) && (condition_cell_to == 0)) return 1;
 			else if (((mas[0] / 10) == 1) && ((mas[1] / 10 - mas[0] / 10) == 2) && (mas[1] % 10 == mas[0] % 10) && (condition_cell_to == 0)) return 1;
 			else if (((mas[1] / 10 - mas[0] / 10) == 1) && ((mas[1] % 10 - mas[0] % 10) == 1) && (condition_cell_to != 0)) return 1;
 			else if (((mas[1] / 10 - mas[0] / 10) == 1) && ((mas[0] % 10 - mas[1] % 10) == 1) && (condition_cell_to != 0)) return 1;
 		}
 		else
 		{
-			if (((mas[0] / 10 - mas[1] / 10) == 1) && (mas[1] % 10 == mas[0] % 10) && (condition_cell_to == 0)) return 1;
+			if (mas[1] / 10 == 0 && ((mas[0] / 10 - mas[1] / 10) == 1) && (mas[1] % 10 == mas[0] % 10) && (condition_cell_to == 0))
+			{
+				if (transform(chess)) return 1;	
+			}
+			else if(mas[1] / 10 == 0 && ((mas[0] / 10 - mas[1] / 10) == 1) && ((mas[1] % 10 - mas[0] % 10) == 1) && (condition_cell_to != 0))
+			{
+				if (transform(chess)) return 1;
+			}
+			else if (mas[1] / 10 == 0 && ((mas[0] / 10 - mas[1] / 10) == 1) && ((mas[0] % 10 - mas[1] % 10) == 1) && (condition_cell_to != 0))
+			{
+				if (transform(chess)) return 1;
+			}
+			else if (((mas[0] / 10 - mas[1] / 10) == 1) && (mas[1] % 10 == mas[0] % 10) && (condition_cell_to == 0)) return 1;
 			else if (((mas[0] / 10) == 6) && ((mas[0] / 10 - mas[1] / 10) == 2) && (mas[1] % 10 == mas[0] % 10) && (condition_cell_to == 0)) return 1;
 			else if (((mas[0] / 10 - mas[1] / 10) == 1) && ((mas[0] % 10 - mas[1] % 10) == 1) && (condition_cell_to != 0)) return 1;
 			else if (((mas[0] / 10 - mas[1] / 10) == 1) && ((mas[1] % 10 - mas[0] % 10) == 1) && (condition_cell_to != 0)) return 1;
@@ -920,7 +966,7 @@ public:
 				check = figure->check_figure(chess);
 				if (check == 0)	flag = 1;
 				else {
-					if (chess.last_check()) flag = 1;
+					if (chess.last_check(0)) flag = 1;
 					else flag = 0;
 				}
 			}

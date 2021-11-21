@@ -23,7 +23,7 @@ private:
   }
 
 
-  
+public:
    bool chek_cell(unsigned short hod[2]/*клетка потенциального удара*/, bool king/*учет удара короля*/)//vozvrashaet 0 v slychae esli cletca ne bietsa
 {
 	//unsigned short hod[2];
@@ -117,6 +117,7 @@ private:
 	}
 	return 0;
 }
+private:
 
 bool chek_cell(unsigned short hod[2]/*, bool king/*учет удара короля*/, unsigned short& attacker_kind, unsigned short* attacker_pos)//vozvrashaet 0 v slychae esli cletca ne bietsa
 {
@@ -641,6 +642,20 @@ public:
 
 	void set_cell_from(unsigned short condition) { cell[cell_from/10][cell_from%10] = condition; }
 	
+	void casling(bool r)
+	{
+		if (r)
+		{
+			if (turn == 0){cell[0][7] = 0; cell[0][5] = 14;}
+			else{cell[7][7] = 0; cell[7][5] = 24;}
+		}
+		else
+		{
+			if (turn == 0) { cell[0][0] = 0; cell[0][3] = 14; }
+			else { cell[7][0] = 0; cell[7][3] = 24; }
+		}
+	}
+
 	class Figure
 	{
 	public:
@@ -696,7 +711,7 @@ public:
 			else if (((mas[1] / 10 - mas[0] / 10) == 1) && ((mas[1] % 10 - mas[0] % 10) == 1) && (condition_cell_to != 0)) return 1;
 			else if (((mas[1] / 10 - mas[0] / 10) == 1) && ((mas[0] % 10 - mas[1] % 10) == 1) && (condition_cell_to != 0)) return 1;
 		}
-		else
+		else//if(turn == 1)
 		{
 			if (mas[1] / 10 == 0 && ((mas[0] / 10 - mas[1] / 10) == 1) && (mas[1] % 10 == mas[0] % 10) && (condition_cell_to == 0))
 			{
@@ -843,18 +858,74 @@ public:
 
 class King : public Chess::Figure
 {
+private:
+	int king_move[2] = { 0 };//0 - white
+	
 public:
+	/*King()
+	{
+		king_move[0] = 0; king_move[1] = 0;
+		cout << king_move[0] << king_move[1];
+	}*/
 	bool check_figure(Chess& chess) override
 	{
+		
+
 		unsigned short* mas = chess.get_cell();
-		if ((mas[1] / 10 - mas[0] / 10) == 1 && (mas[0]%10 == mas[1]%10)) return 1;
-		if ((mas[0] / 10 - mas[1] / 10) == 1 && (mas[0] % 10 == mas[1] % 10)) return 1;
-		if ((mas[0] % 10 - mas[1] % 10) == 1 && (mas[0] / 10 == mas[1] / 10)) return 1;
-		if ((mas[1] % 10 - mas[0] % 10) == 1 && (mas[0] / 10 == mas[1] / 10)) return 1;
-		if (((mas[1] / 10 - mas[0] / 10) == 1) && ((mas[1] % 10 - mas[0] % 10) == 1)) return 1;
-		if (((mas[1] / 10 - mas[0] / 10) == 1) && ((mas[0] % 10 - mas[1] % 10) == 1)) return 1;
-		if (((mas[0] / 10 - mas[1] / 10) == 1) && ((mas[1] % 10 - mas[0] % 10) == 1)) return 1;
-		if (((mas[0] / 10 - mas[1] / 10) == 1) && ((mas[0] % 10 - mas[1] % 10) == 1)) return 1;
+		if ((mas[1] / 10 - mas[0] / 10) == 1 && (mas[0] % 10 == mas[1] % 10)) { king_move[turn]++; return 1; }
+		if ((mas[0] / 10 - mas[1] / 10) == 1 && (mas[0] % 10 == mas[1] % 10)) { king_move[turn]++; return 1; }
+		if ((mas[0] % 10 - mas[1] % 10) == 1 && (mas[0] / 10 == mas[1] / 10)) { king_move[turn]++; return 1; }
+		if ((mas[1] % 10 - mas[0] % 10) == 1 && (mas[0] / 10 == mas[1] / 10)) { king_move[turn]++; return 1; }
+		if (((mas[1] / 10 - mas[0] / 10) == 1) && ((mas[1] % 10 - mas[0] % 10) == 1)) { king_move[turn]++; return 1; }
+		if (((mas[1] / 10 - mas[0] / 10) == 1) && ((mas[0] % 10 - mas[1] % 10) == 1)) { king_move[turn]++; return 1; }
+		if (((mas[0] / 10 - mas[1] / 10) == 1) && ((mas[1] % 10 - mas[0] % 10) == 1)) { king_move[turn]++; return 1; }
+		if (((mas[0] / 10 - mas[1] / 10) == 1) && ((mas[0] % 10 - mas[1] % 10) == 1)) { king_move[turn]++; return 1; }
+
+		unsigned short check_pos[] = { mas[0] % 10, mas[0] / 10 };//castling
+		if (turn == 0)
+		{
+			if((mas[0]/10 == 0) && (mas[0]%10 == 4) && (king_move[0] == 0) && (chess.chek_cell(check_pos, 0) == 0))
+			{ 
+				if ((mas[1] / 10 == 0) && mas[1] % 10 == 6)
+				{
+					for (check_pos[0] = 5; check_pos[0] < 7; check_pos[0]++)
+					{
+						if ((chess.condition_cell(check_pos[0] + check_pos[1] * 10) != 0) || (chess.chek_cell(check_pos, 1) == 1)) break;
+						if (check_pos[0] == 6) { chess.casling(1); king_move[0]++; return 1; }
+					}
+				}
+				else if ((mas[1] / 10 == 0) && mas[1] % 10 == 2)
+				{
+					for (check_pos[0] = 3; check_pos[0] > 0; check_pos[0]--)
+					{
+						if ((chess.condition_cell(check_pos[0] + check_pos[1] * 10) != 0) || ((check_pos[0]!=1)&&(chess.chek_cell(check_pos, 1) == 1))) break;
+						if (check_pos[0] == 1) { chess.casling(0); king_move[0]++; return 1; }
+					}
+				}
+			}
+		}
+		else
+		{
+			if ((mas[0] / 10 == 7) && (mas[0] % 10 == 4) && (king_move[1] == 0) && (chess.chek_cell(check_pos, 0) == 0))
+			{ 
+				if ((mas[1] / 10 == 7) && mas[1] % 10 == 6)
+				{
+					for (check_pos[0] = 5; check_pos[0] < 7; check_pos[0]++)
+					{
+						if ((chess.condition_cell(check_pos[0] + check_pos[1] * 10) != 0) || (chess.chek_cell(check_pos, 1) == 1)) break;
+						if (check_pos[0] == 6) { chess.casling(1); king_move[1]++; return 1; }
+					}
+				}
+				else if ((mas[1] / 10 == 7) && mas[1] % 10 == 2)
+				{
+					for (check_pos[0] = 3; check_pos[0] > 0; check_pos[0]--)
+					{
+						if ((chess.condition_cell(check_pos[0] + check_pos[1]*10) != 0) || ((check_pos[0] != 1) && (chess.chek_cell(check_pos, 1) == 1))) break;
+						if (check_pos[0] == 1) { chess.casling(0); king_move[1]++; return 1; }
+					}
+				}
+			}
+		}
 		return 0;
 	}
 };

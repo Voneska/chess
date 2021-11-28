@@ -15,7 +15,7 @@ class Chess
 private:
 	unsigned short cell[8][8], cell_from, cell_to;
   
-  void victory()
+	void victory()
   {
 	  if (turn == 0)
 	  	cout << "Checkmate to the black King\n" << white << " wooooooon!!!\n";
@@ -24,7 +24,7 @@ private:
 
 
 public:
-   bool chek_cell(unsigned short hod[2]/*клетка потенциального удара*/, bool king/*учет удара короля*/)//vozvrashaet 0 v slychae esli cletca ne bietsa
+	bool chek_cell(unsigned short hod[2]/*клетка потенциального удара*/, bool king/*учет удара короля*/)//vozvrashaet 0 v slychae esli cletca ne bietsa
 {
 	//unsigned short hod[2];
 	//translatePosition(s, hod);
@@ -119,7 +119,7 @@ public:
 }
 private:
 
-bool chek_cell(unsigned short hod[2]/*, bool king/*учет удара короля*/, unsigned short& attacker_kind, unsigned short* attacker_pos)//vozvrashaet 0 v slychae esli cletca ne bietsa
+	bool chek_cell(unsigned short hod[2]/*, bool king/*учет удара короля*/, unsigned short& attacker_kind, unsigned short* attacker_pos)//vozvrashaet 0 v slychae esli cletca ne bietsa
 {
 	//unsigned short hod[2];
 	//translatePosition(s, hod);
@@ -565,14 +565,17 @@ public:
 
 	if (chek_cell(king, 0) == 1)
 	{
-		if (!pawn) {
-			cell[cell_from / 10][cell_from % 10] = cell[cell_to / 10][cell_to % 10];
-			cell[cell_to / 10][cell_to % 10] = buff;
-		}
+		cell[cell_from / 10][cell_from % 10] = cell[cell_to / 10][cell_to % 10];
+		cell[cell_to / 10][cell_to % 10] = buff;
+		
 		return 1;
 	}
 	else
 	{
+		if (pawn) {
+			cell[cell_from / 10][cell_from % 10] = cell[cell_to / 10][cell_to % 10];
+			cell[cell_to / 10][cell_to % 10] = buff;
+		}
 		return 0;
 	}
 }
@@ -711,7 +714,7 @@ public:
 			else if (((mas[1] / 10 - mas[0] / 10) == 1) && ((mas[1] % 10 - mas[0] % 10) == 1) && (condition_cell_to != 0)) return 1;
 			else if (((mas[1] / 10 - mas[0] / 10) == 1) && ((mas[0] % 10 - mas[1] % 10) == 1) && (condition_cell_to != 0)) return 1;
 		}
-		else//if(turn == 1)
+		else
 		{
 			if (mas[1] / 10 == 0 && ((mas[0] / 10 - mas[1] / 10) == 1) && (mas[1] % 10 == mas[0] % 10) && (condition_cell_to == 0))
 			{
@@ -936,14 +939,14 @@ class Menu {
 private:
 	int user_choise = 0;
   
-   void gen_color()
+	void gen_color()
   {
 	  srand(time(0));
 	  if (rand() % 2 == 1) swap(white, black);
   }
 
 
-void choose_player()
+	void choose_player()
 {
 	string choose, choose_c1, choose_c2;
 	cout << "-------Welcome chess fans!-------\n";
@@ -1015,8 +1018,7 @@ public:
 		do {
 			if (flag) cout << "Err. Try again\n";
 			if (chess.check() == 9) flag = 1;
-			else {
-				
+			else {				
 				switch (chess.get_figure())
 				{
 				case 1: figure = new Pawn;
@@ -1030,7 +1032,6 @@ public:
 				case 5: figure = new Queen;
 					break;
 				case 6: figure = new King;
-					break;
 				}
 				check = figure->check_figure(chess);
 				if (check == 0)	flag = 1;

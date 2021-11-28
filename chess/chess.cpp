@@ -390,13 +390,15 @@ private:
 
 	bool motionCheck(unsigned short i0[2]) // 1 - ход возможен, 0 - хода нет --- работа с cell_from
 	{
+		unsigned short color = cell[i0[1]][i0[0]] / 10;  // определение цвета игрока
+		unsigned buff = cell[i0[1]][i0[0]];
+		cell[i0[1]][i0[0]] = 0;
 		int i = 0;
 		int j = 0;
 		int step_j = 2;
 		int step_i = 2;
 		/*unsigned short i0[2] = { 0 };
 		translatePosition(position, i0);*/
-		unsigned short color = cell[i0[1]][i0[0]] / 10;  // определение цвета игрока
 		i0[1] == 0 ? i = i0[1] : i = i0[1] - 1; // прописанные исключения; буквы - j, цифры - i
 		i0[0] == 0 ? j = i0[0] : j = i0[0] - 1;
 		i0[0] == 7 ? step_j = 1 : step_j = 2;
@@ -408,18 +410,18 @@ private:
 				if (cell[i][j] == 0)
 				{
 					unsigned short t[2] = { j,i };
-					if (chek_cell(t, 1) == 0) return 1;
+					if (chek_cell(t, 1) == 0) { cell[i0[1]][i0[0]] = buff; return 1; }
 				}
 				else if (cell[i][j] / 10 != color)
 				{
-					//cout << "-";
 					unsigned short mas[2] = { j,i };
-					if (!chek_cell(mas, 1)) return 1; //Вызывается проверка битой клетки, если клетка не бьется, то return 1;
+					if (!chek_cell(mas, 1)) { cell[i0[1]][i0[0]] = buff; return 1; } //Вызывается проверка битой клетки, если клетка не бьется, то return 1;
 				}
 			}
 			if (i0[0] == 0 || i0[0] == 7) j -= 2;
 			else j -= 3;
 		}
+		cell[i0[1]][i0[0]] = buff;
 		return 0;
 	}
 
@@ -438,14 +440,14 @@ private:
 					t = 1;
 				}
 			}
-
+		
 		unsigned short attacker_kind, attacker_pos[2];
 		if (chek_cell(king, attacker_kind, attacker_pos) == 1)//шах
 		{
 
 			if (motionCheck(king) == 0)//хода нет
 			{
-
+				
 				if ((abs(attacker_pos[1] - king[1]) <= 1) && (abs(attacker_pos[0] - king[0]) <= 1) && (chek_cell(attacker_pos, 1) == 0))//king
 				{
 					turn = not(turn);
@@ -485,7 +487,7 @@ private:
 						if (king[0] < attacker_pos[0])//e
 						{
 							for (unsigned short pos[2] = { king[0] + 2,king[1] }; pos[0] <= attacker_pos[0]; pos[0]++)//e
-								if (chek_cell(pos, 0) == 1) { cout << "*"; buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn + 1) * 10 + 2; attacker_pos[0] = pos[0]; break; }
+								if (chek_cell(pos, 0) == 1) { /*cout << "*";*/ buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn + 1) * 10 + 2; attacker_pos[0] = pos[0]; break; }
 						}
 						else
 							for (unsigned short pos[2] = { king[0] - 2,king[1] }; pos[0] >= attacker_pos[0]; pos[0]--)//w
@@ -632,9 +634,10 @@ public:
 					t = 1;
 				}
 			}
-
+		/*cout << "*";*/
 		if (chek_cell(king, 0) == 1)
 		{
+			/*cout << "!";*/
 			cell[cell_from / 10][cell_from % 10] = cell[cell_to / 10][cell_to % 10];
 			cell[cell_to / 10][cell_to % 10] = buff;
 
@@ -667,7 +670,6 @@ public:
 
 	bool game_turn()
 	{
-
 		system("cls");
 		show();
 		if (k / 2 >= 2 && game_end()) return 0;

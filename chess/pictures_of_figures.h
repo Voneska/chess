@@ -42,7 +42,7 @@
 
 
 #define SIZECELL 40
-#define X_START 400
+#define X_START 450
 #define Y_START 1
 
 HWND hWnd = GetConsoleWindow();

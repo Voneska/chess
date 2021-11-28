@@ -524,7 +524,75 @@ bool motionCheck(unsigned short i0[2]) // 1 - ход возможен, 0 - хо�
 				for (int j=0; j < 8; j++)
 				{
 					if ((cell[i][j] / 10 == turn + 1) && (cell[i][j] % 10 != 1) && (cell[i][j] % 10 != 6)) { turn = not(turn); return 0; }//по статистике смотрим только пешки
-					else if ((cell[i][j] / 10 == turn + 1) && (cell[i][j] % 10 == 1)) /*функция возможности маневра пешкой - возможно*/ { turn = not(turn); return 0; }
+					else if ((cell[i][j] / 10 == turn + 1) && (cell[i][j] % 10 == 1)) /*функция возможности маневра пешкой - возможно*/ 
+					{ 
+						if (turn == 0)
+						{
+							if (cell[i + 1][j] == 0) 
+							{ 
+								cell_from = i * 10 + j; cell_to = (i + 1) * 10 + j; 
+								if(last_check(1)==0)
+								{ turn = not(turn); return 0; } 
+							}
+							else if((i == 1)&&(cell[i+2][j] ==0)&&(cell[i + 1][j] == 0)) 
+							{ 
+								cell_from = i * 10 + j; cell_to = (i + 2) * 10 + j;
+								if (last_check(1) == 0)
+								{
+									turn = not(turn); return 0;
+								}
+							}
+							else if ((j > 0) && (cell[i + 1][j - 1] / 10 != turn + 1) && (cell[i + 1][j - 1] / 10 != 0))
+							{
+								cell_from = i * 10 + j; cell_to = (i + 1) * 10 + j-1;
+								if (last_check(1) == 0)
+								{
+									turn = not(turn); return 0;
+								}
+							}
+							else if ((j < 7) && (cell[i + 1][j + 1] / 10 != turn + 1) && (cell[i + 1][j + 1] / 10 != 0))
+							{
+								cell_from = i * 10 + j; cell_to = (i + 1) * 10 + j+1;
+								if (last_check(1) == 0)
+								{
+									turn = not(turn); return 0;
+								}
+							}
+						}
+						else
+						{
+							if (cell[i - 1][j] == 0)
+							{
+								cell_from = i * 10 + j; cell_to = (i - 1) * 10 + j;
+								if (last_check(1) == 0)
+								{
+									turn = not(turn); return 0;
+								}
+							}
+							else if ((i == 6) && (cell[i - 2][j] == 0) && (cell[i - 1][j] == 0)) 
+								cell_from = i * 10 + j; cell_to = (i - 2) * 10 + j;
+							if (last_check(1) == 0)
+							{
+								turn = not(turn); return 0;
+							}
+							else if ((j > 0) && (cell[i - 1][j - 1] / 10 != turn + 1) && (cell[i - 1][j - 1] / 10 != 0))
+							{
+								cell_from = i * 10 + j; cell_to = (i - 1) * 10 + j-1;
+								if (last_check(1) == 0)
+								{
+									turn = not(turn); return 0;
+								}
+							}
+							else if ((j < 7) && (cell[i - 1][j + 1] / 10 != turn + 1) && (cell[i - 1][j + 1] / 10 != 0))
+							{
+								cell_from = i * 10 + j; cell_to = (i - 1) * 10 + j+1;
+								if (last_check(1) == 0)
+								{
+									turn = not(turn); return 0;
+								}
+							}
+						}
+					}
 				}
 			cout << "Drrrraw!!!\n";
 			return 1;
@@ -645,7 +713,7 @@ public:
 
 	void set_cell_from(unsigned short condition) { cell[cell_from/10][cell_from%10] = condition; }
 	
-	void casling(bool r)
+	void casling(bool r)//r-e, ne(r) - w
 	{
 		if (r)
 		{
@@ -862,17 +930,16 @@ public:
 class King : public Chess::Figure
 {
 private:
-	int king_move[2] = { 0 };//0 - white
-	
+	static int king_move[2];//0 - white
+
 public:
-	/*King()
+	void set_king_move()
 	{
 		king_move[0] = 0; king_move[1] = 0;
-		cout << king_move[0] << king_move[1];
-	}*/
+	}
 	bool check_figure(Chess& chess) override
 	{
-		
+
 
 		unsigned short* mas = chess.get_cell();
 		if ((mas[1] / 10 - mas[0] / 10) == 1 && (mas[0] % 10 == mas[1] % 10)) { king_move[turn]++; return 1; }
@@ -887,9 +954,9 @@ public:
 		unsigned short check_pos[] = { mas[0] % 10, mas[0] / 10 };//castling
 		if (turn == 0)
 		{
-			if((mas[0]/10 == 0) && (mas[0]%10 == 4) && (king_move[0] == 0) && (chess.chek_cell(check_pos, 0) == 0))
-			{ 
-				if ((mas[1] / 10 == 0) && mas[1] % 10 == 6)
+			if ((king_move[0] == 0) && (mas[0] / 10 == 0) && (mas[0] % 10 == 4) && (chess.chek_cell(check_pos, 0) == 0))
+			{
+				if ((mas[1] / 10 == 0) && (mas[1] % 10 == 6) && (chess.condition_cell(7) == 14))
 				{
 					for (check_pos[0] = 5; check_pos[0] < 7; check_pos[0]++)
 					{
@@ -897,11 +964,11 @@ public:
 						if (check_pos[0] == 6) { chess.casling(1); king_move[0]++; return 1; }
 					}
 				}
-				else if ((mas[1] / 10 == 0) && mas[1] % 10 == 2)
+				else if ((mas[1] / 10 == 0) && (mas[1] % 10 == 2) && (chess.condition_cell(0) == 14))
 				{
 					for (check_pos[0] = 3; check_pos[0] > 0; check_pos[0]--)
 					{
-						if ((chess.condition_cell(check_pos[0] + check_pos[1] * 10) != 0) || ((check_pos[0]!=1)&&(chess.chek_cell(check_pos, 1) == 1))) break;
+						if ((chess.condition_cell(check_pos[0] + check_pos[1] * 10) != 0) || ((check_pos[0] != 1) && (chess.chek_cell(check_pos, 1) == 1))) break;
 						if (check_pos[0] == 1) { chess.casling(0); king_move[0]++; return 1; }
 					}
 				}
@@ -909,9 +976,9 @@ public:
 		}
 		else
 		{
-			if ((mas[0] / 10 == 7) && (mas[0] % 10 == 4) && (king_move[1] == 0) && (chess.chek_cell(check_pos, 0) == 0))
-			{ 
-				if ((mas[1] / 10 == 7) && mas[1] % 10 == 6)
+			if ((king_move[1] == 0) && (mas[0] / 10 == 7) && (mas[0] % 10 == 4) && (chess.chek_cell(check_pos, 0) == 0))
+			{
+				if ((mas[1] / 10 == 7) && (mas[1] % 10 == 6) && (chess.condition_cell(77) == 24))
 				{
 					for (check_pos[0] = 5; check_pos[0] < 7; check_pos[0]++)
 					{
@@ -919,11 +986,11 @@ public:
 						if (check_pos[0] == 6) { chess.casling(1); king_move[1]++; return 1; }
 					}
 				}
-				else if ((mas[1] / 10 == 7) && mas[1] % 10 == 2)
+				else if ((mas[1] / 10 == 7) && (mas[1] % 10 == 2) && (chess.condition_cell(70) == 24))
 				{
 					for (check_pos[0] = 3; check_pos[0] > 0; check_pos[0]--)
 					{
-						if ((chess.condition_cell(check_pos[0] + check_pos[1]*10) != 0) || ((check_pos[0] != 1) && (chess.chek_cell(check_pos, 1) == 1))) break;
+						if ((chess.condition_cell(check_pos[0] + check_pos[1] * 10) != 0) || ((check_pos[0] != 1) && (chess.chek_cell(check_pos, 1) == 1))) break;
 						if (check_pos[0] == 1) { chess.casling(0); king_move[1]++; return 1; }
 					}
 				}
@@ -932,7 +999,7 @@ public:
 		return 0;
 	}
 };
-
+int King::king_move[2] = { 0 };
 
 //class menu
 class Menu {
@@ -1009,10 +1076,11 @@ public:
 		system("cls");
 		Chess chess;
 		Chess::Figure* figure = nullptr;
+		
 		bool flag = 0;
 		turn = 0;
 		k = 0;
-		bool check = 0;
+		bool check = 0, king_cond=0;
 		choose_player();
 		chess.start_cell();
 		do {
@@ -1031,7 +1099,7 @@ public:
 					break;
 				case 5: figure = new Queen;
 					break;
-				case 6: figure = new King;
+				case 6: if (king_cond == 0) { King a; a.set_king_move(); king_cond = 1; } figure = new King;
 				}
 				check = figure->check_figure(chess);
 				if (check == 0)	flag = 1;
@@ -1076,7 +1144,6 @@ public:
 	}
 	int give_choise() { return user_choise; }
 };
-
 
 
 

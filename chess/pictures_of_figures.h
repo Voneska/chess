@@ -47,6 +47,7 @@
 
 HWND hWnd = GetConsoleWindow();
 HDC hdc = GetDC(hWnd);
+
 // создание memory DC для этого bitmap-а:
 HDC bmpDC = CreateCompatibleDC(hdc);
 

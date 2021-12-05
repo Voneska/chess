@@ -1,6 +1,6 @@
 #include <iostream>
 #include <Windows.h>
-#include<ctime>
+#include <ctime>
 #include <string>
 #include "pictures_of_figures.h"
 
@@ -20,6 +20,46 @@ private:
 		if (turn == 0)
 			cout << "Checkmate to the black King\n" << white << " wooooooon!!!\n";
 		else if (turn == 1) cout << "Checkmate to the white King\n" << black << " wooooooon!!!\n";
+	}
+
+	void Draw() 
+	{
+		string answer;
+		if (turn)
+		{
+			cout << "Player " << black << " offers a draw to you. \nDo you accept (Yes/No)? \n";
+			cin >> answer;
+			if (answer.at(0) == 'Y' || answer.at(0) == 'y') 
+			{
+				cout << "Draw!\n";
+				k = 666;
+			}
+			else
+			{
+				cout << white << " do not agree.\n";
+			}
+		}
+		else
+		{
+			cout << "Player " << white << " offers a draw to you. \nDo you accept (Yes/No)? \n";
+			cin >> answer;
+			if (answer.at(0) == 'Y' || answer.at(0) == 'y')
+			{
+				cout << "Draw!\n";
+				k = 666;
+			}
+			else
+			{
+				cout << black << " do not agree.\n";
+			}
+		}
+	}
+
+	void Pass()
+	{
+		k = 666;
+		if (turn) cout << "Player " << black << " has passed.\n" << white << " won!";
+		else cout << "Player " << white << " has passed.\n" << black << " won!";
 	}
 
 
@@ -116,6 +156,12 @@ public:
 			if ((hod[1] - 1 >= 0) && (hod[0] - 1 >= 0) && (cell[hod[1] - 1][hod[0] - 1] % 10 == 1) && (cell[hod[1] - 1][hod[0] - 1] / 10 == 1)) return 1;
 		}
 		return 0;
+	}
+	Chess()
+	{
+		cell_from = 0;
+		cell_to = 0;
+		for (int i = 0; i < 8; ++i) for (int j = 0; j < 8; ++j) cell[i][j] = 0;
 	}
 private:
 
@@ -609,13 +655,6 @@ private:
 
 
 public:
-	Chess()
-	{
-		cell_from = 0;
-		cell_to = 0;
-		for (int i = 0; i < 8; ++i) for (int j = 0; j < 8; ++j) cell[i][j] = 0;
-	}
-
 
 	bool last_check(bool pawn)//return 1 esli king pod ydarom; if pawn == 1 do not apply changes
 	{
@@ -690,6 +729,8 @@ public:
 		string from, to;
 		cout << "Select the cell from which you will move: ";
 		cin >> from;
+		if (from == "Draw" || from == "draw") { Draw(); return 8; }
+		else if (from == "Pass" || from == "pass") { Pass(); return 8; }
 		cout << "Select the cell which you will move to: ";
 		cin >> to;
 		translatePosition(from, i1);
@@ -736,12 +777,6 @@ public:
 	public:
 		virtual bool check_figure(Chess& chess) { return 1; }
 	};
-
-	~Chess()
-	{
-		// освобождение ресурсов:
-		DeleteDC(bmpDC);
-	}
 };
 
 class Pawn : public Chess::Figure
@@ -1087,7 +1122,7 @@ public:
 		system("cls");
 		Chess chess;
 		Chess::Figure* figure = nullptr;
-
+		unsigned short f = 0;
 		bool flag = 0;
 		turn = 0;
 		k = 0;
@@ -1096,32 +1131,34 @@ public:
 		chess.start_cell();
 		do {
 			if (flag) cout << "Err. Try again\n";
-			if (chess.check() == 9) flag = 1;
+			if ((f = chess.check()) == 9) flag = 1;
 			else {
-				switch (chess.get_figure())
+				if (k == 666) break;
+				if (f != 8)
 				{
-				case 1: figure = new Pawn;
-					break;
-				case 2: figure = new Horse;
-					break;
-				case 3: figure = new Bishop;
-					break;
-				case 4: figure = new Rook;
-					break;
-				case 5: figure = new Queen;
-					break;
-				case 6: if (king_cond == 0) { King a; a.set_king_move(); king_cond = 1; } figure = new King;
-				}
-				check = figure->check_figure(chess);
-				if (check == 0)	flag = 1;
-				else {
-					if (chess.last_check(0)) flag = 1;
-					else flag = 0;
+					switch (chess.get_figure())
+					{
+					case 1: figure = new Pawn;
+						break;
+					case 2: figure = new Horse;
+						break;
+					case 3: figure = new Bishop;
+						break;
+					case 4: figure = new Rook;
+						break;
+					case 5: figure = new Queen;
+						break;
+					case 6: if (king_cond == 0) { King a; a.set_king_move(); king_cond = 1; } figure = new King;
+					}
+					check = figure->check_figure(chess);
+					if (check == 0)	flag = 1;
+					else {
+						if (chess.last_check(0)) flag = 1;
+						else flag = 0;
+					}
 				}
 			}
 		} while (flag || chess.game_turn());
-
-		//std::cout << "New game has been starting!" << std::endl;
 		cin.get();
 		cin.get();
 	}
@@ -1154,6 +1191,12 @@ public:
 		return user_choise;
 	}
 	int give_choise() { return user_choise; }
+
+	~Menu()
+	{
+		DeleteObject(bmpDC);
+		DeleteObject(hdc);
+	}
 };
 
 

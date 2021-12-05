@@ -1130,7 +1130,7 @@ public:
 		choose_player();
 		chess.start_cell();
 		do {
-			if (flag) cout << "Err. Try again\n";
+			if (flag && f != 8) cout << "Err. Try again\n";
 			if ((f = chess.check()) == 9) flag = 1;
 			else {
 				if (k == 666) break;
@@ -1157,6 +1157,7 @@ public:
 						else flag = 0;
 					}
 				}
+				else flag = 1;
 			}
 		} while (flag || chess.game_turn());
 		cin.get();

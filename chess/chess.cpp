@@ -1191,7 +1191,6 @@ public:
 		}
 		return user_choice;
 	}
-	int give_choice() { return user_choice; }
 
 	~Menu()
 	{

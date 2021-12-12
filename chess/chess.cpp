@@ -64,7 +64,7 @@ private:
 
 
 public:
-	bool chek_cell(unsigned short hod[2]/*клетка потенциального удара*/, bool king/*учет удара короля*/)//vozvrashaet 0 v slychae esli cletca ne bietsa
+	bool check_cell(unsigned short hod[2]/*клетка потенциального удара*/, bool king/*учет удара короля*/)//vozvrashaet 0 v slychae esli cletca ne bietsa
 	{
 		//unsigned short hod[2];
 		//translatePosition(s, hod);
@@ -165,7 +165,7 @@ public:
 	}
 private:
 
-	bool chek_cell(unsigned short hod[2]/*, bool king/*учет удара короля*/, unsigned short& attacker_kind, unsigned short* attacker_pos)//vozvrashaet 0 v slychae esli cletca ne bietsa
+	bool check_cell(unsigned short hod[2]/*, bool king/*учет удара короля*/, unsigned short& attacker_kind, unsigned short* attacker_pos)//vozvrashaet 0 v slychae esli cletca ne bietsa
 	{
 		//unsigned short hod[2];
 		//translatePosition(s, hod);
@@ -456,12 +456,12 @@ private:
 				if (cell[i][j] == 0)
 				{
 					unsigned short t[2] = { j,i };
-					if (chek_cell(t, 1) == 0) { cell[i0[1]][i0[0]] = buff; return 1; }
+					if (check_cell(t, 1) == 0) { cell[i0[1]][i0[0]] = buff; return 1; }
 				}
 				else if (cell[i][j] / 10 != color)
 				{
 					unsigned short mas[2] = { j,i };
-					if (!chek_cell(mas, 1)) { cell[i0[1]][i0[0]] = buff; return 1; } //Вызывается проверка битой клетки, если клетка не бьется, то return 1;
+					if (!check_cell(mas, 1)) { cell[i0[1]][i0[0]] = buff; return 1; } //Вызывается проверка битой клетки, если клетка не бьется, то return 1;
 				}
 			}
 			if (i0[0] == 0 || i0[0] == 7) j -= 2;
@@ -488,13 +488,13 @@ private:
 			}
 		
 		unsigned short attacker_kind, attacker_pos[2];
-		if (chek_cell(king, attacker_kind, attacker_pos) == 1)//шах
+		if (check_cell(king, attacker_kind, attacker_pos) == 1)//шах
 		{
 
 			if (motionCheck(king) == 0)//хода нет
 			{
 				
-				if ((abs(attacker_pos[1] - king[1]) <= 1) && (abs(attacker_pos[0] - king[0]) <= 1) && (chek_cell(attacker_pos, 1) == 0))//king
+				if ((abs(attacker_pos[1] - king[1]) <= 1) && (abs(attacker_pos[0] - king[0]) <= 1) && (check_cell(attacker_pos, 1) == 0))//king
 				{
 					turn = not(turn);
 					return 0;
@@ -502,10 +502,10 @@ private:
 				if (attacker_kind <= 2)//pawn and horse
 				{
 					turn = not(turn);
-					if (chek_cell(attacker_pos, 0) == 1) { turn = not(turn); cell[attacker_pos[1]][attacker_pos[0]] = (turn + 1) * 10 + 2; }
+					if (check_cell(attacker_pos, 0) == 1) { turn = not(turn); cell[attacker_pos[1]][attacker_pos[0]] = (turn + 1) * 10 + 2; }
 					else { victory(); return 1; }
 
-					if (chek_cell(king, 0) == 1) { turn = not(turn); victory(); return 1; }
+					if (check_cell(king, 0) == 1) { turn = not(turn); victory(); return 1; }
 					else
 					{
 						turn = not(turn);
@@ -522,42 +522,42 @@ private:
 						if (king[1] < attacker_pos[1])//n
 						{
 							for (unsigned short pos[2] = { king[0],king[1] + 2 }; pos[1] <= attacker_pos[1]; pos[1]++)//n
-								if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]]; turn = not(turn); cell[pos[1]][pos[0]] = (turn + 1) * 10 + 2; attacker_pos[1] = pos[1]; break; }
+								if (check_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]]; turn = not(turn); cell[pos[1]][pos[0]] = (turn + 1) * 10 + 2; attacker_pos[1] = pos[1]; break; }
 						}
 						else//s
 							for (unsigned short pos[2] = { king[0],king[1] - 2 }; pos[1] >= attacker_pos[1]; pos[1]--)//s
-								if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn + 1) * 10 + 2;  attacker_pos[1] = pos[1]; break; }
+								if (check_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn + 1) * 10 + 2;  attacker_pos[1] = pos[1]; break; }
 					}
 					else if (king[1] == attacker_pos[1])//e,w
 					{
 						if (king[0] < attacker_pos[0])//e
 						{
 							for (unsigned short pos[2] = { king[0] + 2,king[1] }; pos[0] <= attacker_pos[0]; pos[0]++)//e
-								if (chek_cell(pos, 0) == 1) { /*cout << "*";*/ buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn + 1) * 10 + 2; attacker_pos[0] = pos[0]; break; }
+								if (check_cell(pos, 0) == 1) { /*cout << "*";*/ buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn + 1) * 10 + 2; attacker_pos[0] = pos[0]; break; }
 						}
 						else
 							for (unsigned short pos[2] = { king[0] - 2,king[1] }; pos[0] >= attacker_pos[0]; pos[0]--)//w
-								if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn + 1) * 10 + 2; attacker_pos[0] = pos[0]; break; }
+								if (check_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn + 1) * 10 + 2; attacker_pos[0] = pos[0]; break; }
 					}
 					else
 					{
 
 						if ((king[0] < attacker_pos[0]) && (king[1] < attacker_pos[1]))
 							for (unsigned short pos[2] = { king[0] + 2,king[1] + 2 }; pos[0] <= attacker_pos[0] && pos[1] <= attacker_pos[1]; pos[0]++, pos[1]++)//n-e
-								if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn + 1) * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
+								if (check_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn + 1) * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
 						if ((king[0] > attacker_pos[0]) && (king[1] > attacker_pos[1]))
 							for (unsigned short pos[2] = { king[0] - 2,king[1] - 2 }; pos[0] >= attacker_pos[0] && pos[1] >= attacker_pos[1]; pos[0]--, pos[1]--)//s-w
-								if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]]; turn = not(turn); cell[pos[1]][pos[0]] = (turn + 1) * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
+								if (check_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]]; turn = not(turn); cell[pos[1]][pos[0]] = (turn + 1) * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
 						if ((king[0] > attacker_pos[0]) && (king[1] < attacker_pos[1]))
 							for (unsigned short pos[2] = { king[0] + 2,king[1] - 2 }; pos[0] <= attacker_pos[0] && pos[1] >= attacker_pos[1]; pos[0]++, pos[1]--)//s-e
-								if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn + 1) * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
+								if (check_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn + 1) * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
 						if ((king[0] < attacker_pos[0]) && (king[1] > attacker_pos[1]))
 							for (unsigned short pos[2] = { king[0] - 2,king[1] + 2 }; pos[0] >= attacker_pos[0] && pos[1] <= attacker_pos[1]; pos[0]--, pos[1]++)//n-w
-								if (chek_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn + 1) * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
+								if (check_cell(pos, 0) == 1) { buff = cell[pos[1]][pos[0]];  turn = not(turn); cell[pos[1]][pos[0]] = (turn + 1) * 10 + 2; attacker_pos[0] = pos[0]; attacker_pos[1] = pos[1]; break; }
 					}
 
 					if (buff == 99) turn = not(turn);
-					if (chek_cell(king, 0) == 1) { turn = not(turn); victory(); return 1; }
+					if (check_cell(king, 0) == 1) { turn = not(turn); victory(); return 1; }
 					else { cell[attacker_pos[1]][attacker_pos[0]] = buff; return 0; }
 				}
 				return 0;
@@ -674,7 +674,7 @@ public:
 				}
 			}
 		/*cout << "*";*/
-		if (chek_cell(king, 0) == 1)
+		if (check_cell(king, 0) == 1)
 		{
 			/*cout << "!";*/
 			cell[cell_from / 10][cell_from % 10] = cell[cell_to / 10][cell_to % 10];
@@ -758,7 +758,7 @@ public:
 
 	void set_cell_from(unsigned short condition) { cell[cell_from / 10][cell_from % 10] = condition; }
 
-	void casling(bool r)//r-e, ne(r) - w
+	void castling(bool r)//r-e, ne(r) - w
 	{
 		if (r)
 		{
@@ -1000,44 +1000,44 @@ public:
 		unsigned short check_pos[] = { mas[0] % 10, mas[0] / 10 };//castling
 		if (turn == 0)
 		{
-			if ((king_move[0] == 0) && (mas[0] / 10 == 0) && (mas[0] % 10 == 4) && (chess.chek_cell(check_pos, 0) == 0))
+			if ((king_move[0] == 0) && (mas[0] / 10 == 0) && (mas[0] % 10 == 4) && (chess.check_cell(check_pos, 0) == 0))
 			{
 				if ((mas[1] / 10 == 0) && (mas[1] % 10 == 6) && (chess.condition_cell(7) == 14))
 				{
 					for (check_pos[0] = 5; check_pos[0] < 7; check_pos[0]++)
 					{
-						if ((chess.condition_cell(check_pos[0] + check_pos[1] * 10) != 0) || (chess.chek_cell(check_pos, 1) == 1)) break;
-						if (check_pos[0] == 6) { chess.casling(1); king_move[0]++; return 1; }
+						if ((chess.condition_cell(check_pos[0] + check_pos[1] * 10) != 0) || (chess.check_cell(check_pos, 1) == 1)) break;
+						if (check_pos[0] == 6) { chess.castling(1); king_move[0]++; return 1; }
 					}
 				}
 				else if ((mas[1] / 10 == 0) && (mas[1] % 10 == 2) && (chess.condition_cell(0) == 14))
 				{
 					for (check_pos[0] = 3; check_pos[0] > 0; check_pos[0]--)
 					{
-						if ((chess.condition_cell(check_pos[0] + check_pos[1] * 10) != 0) || ((check_pos[0] != 1) && (chess.chek_cell(check_pos, 1) == 1))) break;
-						if (check_pos[0] == 1) { chess.casling(0); king_move[0]++; return 1; }
+						if ((chess.condition_cell(check_pos[0] + check_pos[1] * 10) != 0) || ((check_pos[0] != 1) && (chess.check_cell(check_pos, 1) == 1))) break;
+						if (check_pos[0] == 1) { chess.castling(0); king_move[0]++; return 1; }
 					}
 				}
 			}
 		}
 		else
 		{
-			if ((king_move[1] == 0) && (mas[0] / 10 == 7) && (mas[0] % 10 == 4) && (chess.chek_cell(check_pos, 0) == 0))
+			if ((king_move[1] == 0) && (mas[0] / 10 == 7) && (mas[0] % 10 == 4) && (chess.check_cell(check_pos, 0) == 0))
 			{
 				if ((mas[1] / 10 == 7) && (mas[1] % 10 == 6) && (chess.condition_cell(77) == 24))
 				{
 					for (check_pos[0] = 5; check_pos[0] < 7; check_pos[0]++)
 					{
-						if ((chess.condition_cell(check_pos[0] + check_pos[1] * 10) != 0) || (chess.chek_cell(check_pos, 1) == 1)) break;
-						if (check_pos[0] == 6) { chess.casling(1); king_move[1]++; return 1; }
+						if ((chess.condition_cell(check_pos[0] + check_pos[1] * 10) != 0) || (chess.check_cell(check_pos, 1) == 1)) break;
+						if (check_pos[0] == 6) { chess.castling(1); king_move[1]++; return 1; }
 					}
 				}
 				else if ((mas[1] / 10 == 7) && (mas[1] % 10 == 2) && (chess.condition_cell(70) == 24))
 				{
 					for (check_pos[0] = 3; check_pos[0] > 0; check_pos[0]--)
 					{
-						if ((chess.condition_cell(check_pos[0] + check_pos[1] * 10) != 0) || ((check_pos[0] != 1) && (chess.chek_cell(check_pos, 1) == 1))) break;
-						if (check_pos[0] == 1) { chess.casling(0); king_move[1]++; return 1; }
+						if ((chess.condition_cell(check_pos[0] + check_pos[1] * 10) != 0) || ((check_pos[0] != 1) && (chess.check_cell(check_pos, 1) == 1))) break;
+						if (check_pos[0] == 1) { chess.castling(0); king_move[1]++; return 1; }
 					}
 				}
 			}
@@ -1050,7 +1050,7 @@ int King::king_move[2] = { 0 };
 //class menu
 class Menu {
 private:
-	int user_choise = 0;
+	int user_choice = 0;
 
 	void gen_color()
 	{
@@ -1059,7 +1059,7 @@ private:
 	}
 
 
-	void choose_player()
+	void choice_player()
 	{
 		string choose, choose_c1, choose_c2;
 		cout << "-------Welcome chess fans!-------\n";
@@ -1127,7 +1127,7 @@ public:
 		turn = 0;
 		k = 0;
 		bool check = 0, king_cond = 0;
-		choose_player();
+		choice_player();
 		chess.start_cell();
 		do {
 			if (flag && f != 8) cout << "Err. Try again\n";
@@ -1176,22 +1176,22 @@ public:
 		system("cls");
 		std::cout << "Thanks for playing. Good bye." << std::endl;
 	}
-	void Err_choise() {
+	void Err_choice() {
 		system("cls");
 		std::cout << "It's wrong!" << std::endl;
 		Sleep(500);
 	}
 
-	int set_choise() {
+	int set_choice() {
 		menu_window();
-		std::cin >> user_choise;
+		std::cin >> user_choice;
 		if (std::cin.fail()) { // check error flags
 			std::cin.clear(); // clears error flags
 			std::cin.ignore(2323, '\n'); // ~ while(cin.get() != '\n');
 		}
-		return user_choise;
+		return user_choice;
 	}
-	int give_choise() { return user_choise; }
+	int give_choice() { return user_choice; }
 
 	~Menu()
 	{
@@ -1207,7 +1207,7 @@ public:
 int main()
 {
 	Menu game_menu;
-	switch (game_menu.set_choise()) {
+	switch (game_menu.set_choice()) {
 	case 1:
 		game_menu.New_game();
 		main();
@@ -1220,7 +1220,7 @@ int main()
 		game_menu.Exit();
 		break;
 	default:
-		game_menu.Err_choise();
+		game_menu.Err_choice();
 		main();
 	}
 }
